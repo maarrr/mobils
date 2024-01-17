@@ -35,60 +35,67 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Center(
           child: Column(
           children: [
-            Align(
+            const Align(
               alignment: Alignment.topCenter,
-
               child:
               Column(
                 children: [
-                  SizedBox(height: 8),
+                  SizedBox(height: 16),
                   Text(
                     'PixelGenius',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 32,
+                      fontFamily: 'Work Sans',
                     ),
                   ),
                 ]
               )
             ),
+
+
             Align(
               alignment: Alignment.bottomCenter,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Email", style: TextStyle(
+                  const Text("Email", style: TextStyle(
                     color: Colors.white,
-                    fontSize: 8,
+                    fontSize: 16,
+                    fontFamily: 'Work Sans',
                   )),
                   TextField(
                       keyboardType: TextInputType.emailAddress,
-                      textAlign: TextAlign.center,
+                      textAlign: TextAlign.start,
                       onChanged: (value) {
 
                       },
-                      decoration: decoration.copyWith(
-                          label: Text('Email'),
-                      )
+                      decoration: decoration
                   ),
                   SizedBox(height: 16),
+                  const Text("Password", style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontFamily: 'Work Sans',
+                  )),
                   TextField(
-                      keyboardType: TextInputType.emailAddress,
-                      textAlign: TextAlign.center,
+                      keyboardType: TextInputType.visiblePassword,
+                      textAlign: TextAlign.start,
                       onChanged: (value) {
-                        email = value;
+
                       },
-                      decoration: decoration.copyWith(
-                        label: Text('Password'),
-                      )
+                      decoration: decoration
                   ),
                   SizedBox(height: 16),
                   Row(
+
                     children: [
-                      Text(
+                      const Text(
                         "Don't have an account?",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
+                          fontFamily: 'Work Sans',
                         ),
                       ),
                       TextButton(
@@ -100,11 +107,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     );*/
                         },
-                        child: Text(
+                        child: const Text(
                           'Sign In',
                           style: TextStyle(
-                            color: Colors.blue,
+                            color: Colors.white,
                             fontSize: 16,
+                            fontFamily: 'Work Sans',
                           ),
                         ),
                       ),
