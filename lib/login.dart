@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobils/constants.dart';
+import 'package:mobils/sign-in.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -11,7 +12,9 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   late String email;
   late String password;
-  bool _isError = false;
+  bool isError = false;
+  late String msg = "ERRROR";
+
 
   //final _auth = FirebaseAuth.instance;
 
@@ -46,10 +49,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     fontFamily: 'Work Sans',
                   )),
                   TextField(
+                      style: const TextStyle(color: textColor),
                       keyboardType: TextInputType.emailAddress,
                       textAlign: TextAlign.start,
                       onChanged: (value) {
-
+                        email = value;
                       },
                       decoration: decoration
                   ),
@@ -60,14 +64,29 @@ class _LoginScreenState extends State<LoginScreen> {
                     fontFamily: 'Work Sans',
                   )),
                   TextField(
-                      keyboardType: TextInputType.visiblePassword,
+                      style: const TextStyle(color: textColor),
+                      obscureText: true,
                       textAlign: TextAlign.start,
                       onChanged: (value) {
-
-                      },
+                        password = value;
+                        },
                       decoration: decoration
                   ),
                   const SizedBox(height: 16),
+                  if(isError)
+                    Column(
+                      children: [
+                        Text(
+                          msg,
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 18,
+                            fontFamily: 'Work Sans',
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -81,17 +100,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       TextButton(
                         onPressed: () {
-                          /*Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SignInScreen(),
-                      ),
-                    );*/
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => SignInScreen(),
+                              ),
+                          );
                         },
                         child: const Text(
                           'Sign In',
                           style: TextStyle(
-                            color: mainColor,
+                            color: secondaryColor,
                             fontSize: 18,
                             fontFamily: 'Work Sans',
                             fontWeight: FontWeight.bold,
@@ -100,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Align(
                     alignment: Alignment.center,
                     child: ElevatedButton(
