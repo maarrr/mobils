@@ -1,15 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobils/sign-in.dart';
-
-const decoration = InputDecoration(
-  border: OutlineInputBorder(
-    borderRadius: BorderRadius.all(Radius.circular(8.0)),
-  ),
-  enabledBorder: OutlineInputBorder(
-    borderSide: BorderSide(color: Colors.white, width: 1.0),
-    borderRadius: BorderRadius.all(Radius.circular(8.0)),
-  ),
-);
+import 'package:mobils/constants.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -28,39 +18,30 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: backgroundColor,
+      appBar: AppBar(
+        title: const Text(
+          'PixelGenius',
+          style: TextStyle(
+            color: textColor,
+            fontSize: 24,
+            fontFamily: 'Work Sans',
+          ),
+        ),
+        backgroundColor: backgroundColor,
+        centerTitle: true,
+
+      ),
       body:
       Padding(
         padding: const EdgeInsets.all(32.0), // Adjust the value as needed
         child: Center(
           child: Column(
-          children: [
-            const Align(
-              alignment: Alignment.topCenter,
-              child:
-              Column(
-                children: [
-                  SizedBox(height: 16),
-                  Text(
-                    'PixelGenius',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontFamily: 'Work Sans',
-                    ),
-                  ),
-                ]
-              )
-            ),
-
-
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text("Email", style: TextStyle(
-                    color: Colors.white,
+                    color: textColor,
                     fontSize: 16,
                     fontFamily: 'Work Sans',
                   )),
@@ -72,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       decoration: decoration
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   const Text("Password", style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -86,15 +67,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       decoration: decoration
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Row(
-
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text(
                         "Don't have an account?",
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 16,
+                          fontSize: 18,
                           fontFamily: 'Work Sans',
                         ),
                       ),
@@ -110,31 +91,42 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: const Text(
                           'Sign In',
                           style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
+                            color: mainColor,
+                            fontSize: 18,
                             fontFamily: 'Work Sans',
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                     ],
                   ),
                   SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Perform some action
-                    },
-                    child: Text('Login'),
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.purple,
-                      onPrimary: Colors.blue,
+                  Align(
+                    alignment: Alignment.center,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: mainColor,
+                        shadowColor: secondaryColor,
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(32.0)),
+                        minimumSize: const Size(240, 60), //////// HERE
+                      ),
+                      onPressed: () {},
+                      child: const Text(
+                        'Login',
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: 24,
+                          fontFamily: 'Work Sans',
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
-            )
-          ],
         ),
-      )),
+      )
     );
   }
 }
