@@ -59,26 +59,14 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
         await storageRef.child(filename).putData(bytes);
 
         // Show a success message or perform any other actions after uploading to Firebase Storage
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Image saved to Firebase Storage"),
-          ),
-        );
+        print("Image saved to Firebase Storage");
       } catch (e) {
         // Show an error message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Error saving image: $e"),
-          ),
-        );
+        print("Error saving image: $e");
       }
     } else {
       // Handle the case where no image is generated.
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("No image to save"),
-        ),
-      );
+      print("No image to save");
     }
   }
 
