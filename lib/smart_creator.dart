@@ -45,8 +45,15 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
   Future<void> _saveImage(String base64Image) async {
     if (_generatedImage.isNotEmpty) {
       try {
+        Uri? imageUrl = Uri.tryParse(_generatedImage);
+        if (imageUrl == null) {
+          // Invalid URL, handle the error
+          print("Invalid URL: $_generatedImage");
+          return;
+        }
+
         // Download the image bytes
-        var response = await http.get(Uri.parse(_generatedImage));
+        var response = await http.get(imageUrl);
         Uint8List bytes = response.bodyBytes;
 
         // Create a reference to the Firebase Storage bucket
@@ -58,7 +65,7 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
         // Upload the image to Firebase Storage
         await storageRef.child(filename).putData(bytes);
 
-        // Show a success message or perform any other actions after uploading to Firebase Storage
+        // Show a success message or perform any
         print("Image saved to Firebase Storage");
       } catch (e) {
         // Show an error message
@@ -69,6 +76,7 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
       print("No image to save");
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -111,11 +119,14 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
               maxLines: 4,
               style: TextStyle(color: textColor),
               decoration: InputDecoration(
-                labelText: 'Describe the image...',
-                border: OutlineInputBorder(),
-                filled: true,
-                fillColor: Colors.white,
-                labelStyle: TextStyle(color: mainColor),
+                labelText: "Input your image description...",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white, width: 1.0),
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                ),
               ),
             ),
             SizedBox(height: 16),
@@ -125,16 +136,16 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
                 ElevatedButton(
                   onPressed: _generateImage,
                   style: ElevatedButton.styleFrom(
-                    primary: mainColor,
-                    onPrimary: textColor,
+                    backgroundColor: mainColor,
+                    foregroundColor: textColor,
                   ),
                   child: Text('Generate Image'),
                 ),
                 ElevatedButton(
                   onPressed: () => _saveImage(_generatedImage),
                   style: ElevatedButton.styleFrom(
-                    primary: mainColor,
-                    onPrimary: textColor,
+                    backgroundColor: mainColor,
+                    foregroundColor: textColor,
                   ),
                   child: Text('Save Image'),
                 ),

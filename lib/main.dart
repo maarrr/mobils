@@ -6,10 +6,11 @@ import 'firebase_options.dart';
 
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   OpenAI.apiKey = "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";
   OpenAI.organization = null;
-
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
