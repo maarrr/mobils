@@ -1,15 +1,17 @@
+
+
 import 'package:shared_preferences/shared_preferences.dart';
 
-const _customerAccessTokenKey = 'customer-access-token';
+const _user = 'user';
 
 class Store {
-  static Future<String?> getAccessToken() async {
+  static Future<String?> getUser() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_customerAccessTokenKey);
+    return prefs.getString(_user);
   }
 
-  static Future<void> saveAccessToken(String accessToken) async {
+  static Future<void> saveUser(String userId) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString(_customerAccessTokenKey, accessToken);
+    prefs.setString(_user, userId);
   }
 }

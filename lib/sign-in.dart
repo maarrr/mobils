@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobils/constants.dart';
 import 'package:mobils/gallery.dart';
+import 'package:mobils/store.dart';
 
 
 class SignInScreen extends StatefulWidget {
@@ -148,16 +149,17 @@ class _SignInScreenState extends State<SignInScreen> {
                             borderRadius: BorderRadius.circular(32.0)),
                         minimumSize: const Size(240, 60), //////// HERE
                       ),
-                      onPressed: () {
+                      onPressed: () async {
                         if(password.compareTo(confirmPassword) != 0) {
                           isError = true;
                           msg = "Password and confirmation should be equal.";
                           return;
                         }
                         try {
-                          final user = _auth.createUserWithEmailAndPassword(
+                          final userCredentials = await _auth.createUserWithEmailAndPassword(
                               email: email, password: password);
-                          if(user != null) {
+                          if(userCredentials != null) {
+                            Store.saveUser(userCredentials.user!.uid);
                             Navigator.push(context, MaterialPageRoute(
                                 builder: (context) => const GalleryScreen(),
                               ),
