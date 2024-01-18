@@ -3,6 +3,9 @@ import 'package:mobils/constants.dart';
 import 'package:mobils/gallery.dart';
 import 'package:mobils/sign-in.dart';
 
+import 'package:mobils/smart_editor.dart';
+import 'package:mobils/smart_creator.dart';
+
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -132,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       onPressed: () {
                         Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => const GalleryScreen(),
+                          builder: (context) => const SmartCreatorScreen(),
                         ),
                         );
                       },
