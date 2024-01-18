@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobils/constants.dart';
+import 'package:mobils/gallery.dart';
 import 'package:mobils/sign-in.dart';
 
 
@@ -129,7 +130,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderRadius: BorderRadius.circular(32.0)),
                         minimumSize: const Size(240, 60), //////// HERE
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => const GalleryScreen(),
+                        ),
+                        );
+                      },
                       child: const Text(
                         'Login',
                         style: TextStyle(
