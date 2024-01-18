@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobils/constants.dart';
+import 'package:mobils/gallery.dart';
 
 
 class SignInScreen extends StatefulWidget {
@@ -16,7 +18,7 @@ class _SignInScreenState extends State<SignInScreen> {
   bool isError = false;
   late String msg;
 
-  //final _auth = FirebaseAuth.instance;
+  final _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -45,20 +47,6 @@ class _SignInScreenState extends State<SignInScreen> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Name", style: TextStyle(
-                    color: textColor,
-                    fontSize: 16,
-                    fontFamily: 'Work Sans',
-                  )),
-                  TextField(
-                      keyboardType: TextInputType.name,
-                      style: const TextStyle(color: textColor),
-                      textAlign: TextAlign.start,
-                      onChanged: (value) { name = value; },
-                      decoration: decoration
-                  ),
-                  const SizedBox(height: 16),
-
                   const Text("Email", style: TextStyle(
                     color: textColor,
                     fontSize: 16,
@@ -161,12 +149,24 @@ class _SignInScreenState extends State<SignInScreen> {
                         minimumSize: const Size(240, 60), //////// HERE
                       ),
                       onPressed: () {
-                        if(password.compareTo(confirmPassword) == 0) {
+                        if(password.compareTo(confirmPassword) != 0) {
                           isError = true;
-                          msg = "Password and confirmation should be equal";
+                          msg = "Password and confirmation should be equal.";
+                          return;
                         }
-
-
+                        try {
+                          final user = _auth.createUserWithEmailAndPassword(
+                              email: email, password: password);
+                          if(user != null) {
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (context) => const GalleryScreen(),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          isError = true;
+                          msg = "Error creating user.";
+                        }
                       },
                       child: const Text(
                         'Sign In',
@@ -185,5 +185,9 @@ class _SignInScreenState extends State<SignInScreen> {
         )
 
     );
+  }
+
+  Future<void> signIn() async {
+
   }
 }

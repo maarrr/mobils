@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -20,8 +21,20 @@ class GalleryScreen extends StatefulWidget {
 
 class _GalleryScreenState extends State<GalleryScreen> {
   String? imagePath;
+  // A reference to the Firebase Storage bucket
+  final storageRef = FirebaseStorage.instance.ref().child('photos');
+
+  // A stream of the photos in the Firebase Storage bucket
+  late Stream<List<Reference>> photosStream;
+
   firebase_storage.FirebaseStorage storage =
       firebase_storage.FirebaseStorage.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    photosStream = storageRef.listAll().asStream().map((result) => result.items);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,13 +93,48 @@ class _GalleryScreenState extends State<GalleryScreen> {
                       )
                     ],
                   ),
-                  (imagePath != null)
-                      ? Image.file(File(imagePath as String))
-                      : Container(
-                    width: 300,
-                    height: 300,
-                    color: Colors.grey[300]!,
-                  ),
+                  StreamBuilder<List<Reference>>(
+                  stream: photosStream,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      // The photos are available
+                      final photos = snapshot.data;
+                      return ListView.builder(
+                        itemCount: photos?.length,
+                        itemBuilder: (context, index) {
+                          // Display each photo in a Card widget
+                          return Card(
+                            child: ListTile(
+                              leading: FutureBuilder<String>(
+                                future: photos?[index].getDownloadURL(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    // The download URL is available
+                                    final url = snapshot.data;
+                                    return Image.network(url!);
+                                  } else {
+                                    // The download URL is not available yet
+                                    return CircularProgressIndicator();
+                                  }
+                                },
+                              ),
+                              title: Text(photos![index].name),
+                              trailing: IconButton(
+                                icon: Icon(Icons.delete),
+                                onPressed: () {
+                                  // Delete the photo from Firebase Storage
+                                  photos[index].delete();
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    } else {
+                      // The photos are not available yet
+                      return Center(child: CircularProgressIndicator());
+                    }
+                  })
 
                 ],
               ),
