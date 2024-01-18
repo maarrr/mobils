@@ -4,6 +4,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'package:dart_openai/dart_openai.dart';
+
 import 'constants.dart';
 
 
@@ -17,6 +19,7 @@ class GalleryScreen extends StatefulWidget {
 
 class _GalleryScreenState extends State<GalleryScreen> {
   String? imagePath;
+  String? maskPath;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +69,26 @@ class _GalleryScreenState extends State<GalleryScreen> {
                               borderRadius: BorderRadius.circular(50.0)),
                           minimumSize: const Size(42,42), //////// HERE
                         ),
-                        onPressed: () {pickMedia(ImageSource.gallery);},
+                        onPressed: () async {
+                          imagePath = await pickMedia(ImageSource.gallery);
+                          maskPath = await pickMedia(ImageSource.gallery);
+                          setState(() {});
+
+                          OpenAIImageModel imageEdits = await OpenAI.instance.image.edit(
+                            prompt: 'mask the image with color red',
+                            image: File(imagePath as String),
+                            mask: File(maskPath as String),
+                            n: 1,
+                            size: OpenAIImageSize.size1024,
+                            responseFormat: OpenAIImageResponseFormat.url,
+                          );
+
+                          for (int index = 0; index < imageEdits.data.length; index++) {
+                            final currentItem = imageEdits.data[index].url.toString();
+                            print(currentItem);
+                          }
+
+                          },
                         child: addButtonStyle("", Icons.add)
                     )
                   ],
@@ -87,14 +109,13 @@ class _GalleryScreenState extends State<GalleryScreen> {
   }
 
 
-  void pickMedia(ImageSource source) async {
+  Future<String?> pickMedia(ImageSource source) async {
     XFile? file;
     file = await ImagePicker().pickImage(source: source);
-
     if (file != null) {
-      imagePath = file.path;
-      setState(() {});
+      return file.path.toString();
     }
+    return null;
   }
 }
 

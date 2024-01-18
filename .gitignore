@@ -25,3 +25,6 @@ doc/api/
 
 .flutter-plugins
 .flutter-plugins-dependencies
+/images/OpenAI_ImageMask.png
+/images/OpenAI_ImageTest.png
+/images/OpenAI_Test.jpg
