@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:mobils/login.dart';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 
 void main() async {
   OpenAI.apiKey = "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";
   OpenAI.organization = null;
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
