@@ -1,141 +1,144 @@
-import 'dart:io';
-import 'dart:ui' as ui;
-import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'dart:io';
-import 'dart:ui' as ui;
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:dart_openai/dart_openai.dart';
+import 'package:http/http.dart' as http;
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:mobils/constants.dart';
 
-class MyImageEditor extends StatefulWidget {
-
-  const MyImageEditor({Key? key}) : super(key: key);
+class SmartEditorScreen extends StatefulWidget {
+  const SmartEditorScreen({Key? key}) : super(key: key);
 
   @override
-  _MyImageEditorState createState() => _MyImageEditorState();
+  _SmartEditorScreenState createState() => _SmartEditorScreenState();
 }
 
-class _MyImageEditorState extends State<MyImageEditor> {
-  String _image = "";
-  Color selectedColor = Colors.black;
-  List<List<Offset>> strokes = [];
+class _SmartEditorScreenState extends State<SmartEditorScreen> {
+  String _generatedImage = '';
+  bool _isLoading = false;
 
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      String imagePath = pickedFile.path.toString();
+      _generateVariations(imagePath);
+    }
+  }
+
+  void _generateVariations(String imagePath) async {
     setState(() {
-      _image = pickedFile!.path.toString();
-      strokes.clear(); // Clear previous drawings when a new image is picked
+      _isLoading = true;
+      _generatedImage = ''; // Reset the previous image
     });
+
+    try {
+      OpenAIImageModel imageVariation = await OpenAI.instance.image.variation(
+        image: File(imagePath),
+        n: 1,
+        size: OpenAIImageSize.size1024,
+        responseFormat: OpenAIImageResponseFormat.b64Json,
+      );
+      print(imageVariation.data[0].url.toString());
+      setState(() {
+        _generatedImage = imageVariation.data[0].b64Json.toString();
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _saveImage(String base64Image) async {
+    if (_generatedImage.isNotEmpty) {
+      try {
+        Uri? imageUrl = Uri.tryParse(_generatedImage);
+        if (imageUrl == null) {
+          print("Invalid URL: $_generatedImage");
+          return;
+        }
+
+        var response = await http.get(imageUrl);
+        Uint8List bytes = response.bodyBytes;
+
+        final storageRef = firebase_storage.FirebaseStorage.instance.ref();
+        String filename = 'image_${DateTime.now().millisecondsSinceEpoch}.png';
+
+        await storageRef.child(filename).putData(bytes);
+
+        print("Image saved to Firebase Storage");
+      } catch (e) {
+        print("Error saving image: $e");
+      }
+    } else {
+      print("No image to save");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: Text('Image Editor'),
+        title: Text('Image variations Generator', style: TextStyle(color: textColor)),
+        backgroundColor: mainColor,
+        centerTitle: true,
       ),
-      body: Column(
-        children: [
-          _image == null
-              ? Expanded(
-            child: Center(
-              child: ElevatedButton(
-                onPressed: _pickImage,
-                child: Text('Pick Image'),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _isLoading
+                ? CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(mainColor),
+            )
+                : _generatedImage.isNotEmpty
+                ? Image.memory(
+              base64.decode(_generatedImage),
+              height: 200,
+              width: 200,
+              fit: BoxFit.cover,
+            )
+                : Container(
+              width: 200,
+              height: 200,
+              color: Colors.grey,
+              child: Icon(
+                Icons.image,
+                size: 100,
+                color: Colors.white,
               ),
             ),
-          )
-              : Expanded(
-            child: GestureDetector(
-              onPanUpdate: (details) {
-                RenderBox renderBox = context.findRenderObject() as RenderBox;
-                setState(() {
-                  strokes.last.add(renderBox.globalToLocal(details.globalPosition));
-                });
-              },
-              onPanEnd: (details) {
-                strokes.add([]); // Start a new stroke
-              },
-              child: CustomPaint(
-                painter: MyPainter(PickedFile(_image), strokes, selectedColor),
-              ),
+            SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                  onPressed: _pickImage,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: mainColor,
+                    foregroundColor: textColor,
+                  ),
+                  child: Text('Generate Image'),
+                ),
+                ElevatedButton(
+                  onPressed: () => _saveImage(_generatedImage),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: mainColor,
+                    foregroundColor: textColor,
+                  ),
+                  child: Text('Save Image'),
+                ),
+              ],
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Pick a color'),
-                        content: SingleChildScrollView(
-                          child: ColorPicker(
-                            pickerColor: selectedColor,
-                            onColorChanged: (color) {
-                              setState(() {
-                                selectedColor = color;
-                              });
-                            },
-                            showLabel: true,
-                            pickerAreaHeightPercent: 0.8,
-                          ),
-                        ),
-                        actions: <Widget>[
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text('Done'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-                child: Text('Pick Color'),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
-  }
-}
-
-class MyPainter extends CustomPainter {
-  final PickedFile image;
-  final List<List<Offset>> strokes;
-  final Color color;
-
-  MyPainter(this.image, this.strokes, this.color);
-
-  @override
-  void paint(Canvas canvas, Size size) async {
-    final img = await decodeImageFromList(await File(this.image.path).readAsBytes());
-    canvas.drawImage(img, Offset.zero, Paint());
-
-    Paint paint = Paint()
-      ..color = color.withOpacity(0.5) // Set opacity for the drawn area
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = 5.0;
-
-    for (var stroke in strokes) {
-      for (int i = 0; i < stroke.length - 1; i++) {
-        if (stroke[i] != null && stroke[i + 1] != null) {
-          canvas.drawLine(stroke[i], stroke[i + 1], paint);
-        }
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
   }
 }
