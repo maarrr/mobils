@@ -3,6 +3,9 @@ import 'package:mobils/constants.dart';
 import 'package:mobils/gallery.dart';
 import 'package:mobils/sign-in.dart';
 
+import 'package:mobils/smart_editor.dart';
+import 'package:mobils/smart_creator.dart';
+
 
 class LoginScreen extends StatefulWidget {
   @override
