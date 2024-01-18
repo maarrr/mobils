@@ -123,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     alignment: Alignment.center,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: mainColor,
+                        backgroundColor: primaryColor,
                         shadowColor: secondaryColor,
                         elevation: 3,
                         shape: RoundedRectangleBorder(

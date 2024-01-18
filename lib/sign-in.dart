@@ -139,7 +139,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         child: const Text(
                           'Login',
                           style: TextStyle(
-                            color: mainColor,
+                            color: primaryColor,
                             fontSize: 18,
                             fontFamily: 'Work Sans',
                             fontWeight: FontWeight.bold,
@@ -153,7 +153,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     alignment: Alignment.center,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: mainColor,
+                        backgroundColor: primaryColor,
                         shadowColor: secondaryColor,
                         elevation: 3,
                         shape: RoundedRectangleBorder(
