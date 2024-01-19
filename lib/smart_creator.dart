@@ -5,6 +5,7 @@ import 'package:dart_openai/dart_openai.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:mobils/constants.dart';
+import 'package:mobils/store.dart';
 
 import 'bottom-menu.dart';
 
@@ -47,38 +48,51 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
   Future<void> _saveImage(String base64Image) async {
     if (_generatedImage.isNotEmpty) {
       try {
-        Uri? imageUrl = Uri.tryParse(_generatedImage);
-        if (imageUrl == null) {
-          // Invalid URL, handle the error
-          print("Invalid URL: $_generatedImage");
-          return;
-        }
-
-        // Download the image bytes
-        var response = await http.get(imageUrl);
-        Uint8List bytes = response.bodyBytes;
+        Uint8List bytes = base64.decode(_generatedImage);
 
         // Create a reference to the Firebase Storage bucket
         final storageRef = firebase_storage.FirebaseStorage.instance.ref();
 
         // Generate a unique filename for the image
-        String filename = 'image_${DateTime.now().millisecondsSinceEpoch}.png';
+        final uid = await Store.getUser();
+        String filename = 'creations/image_${DateTime.now().millisecondsSinceEpoch}.png';
+        final destination = '$uid/$filename';
 
         // Upload the image to Firebase Storage
-        await storageRef.child(filename).putData(bytes);
+        await storageRef.child(destination).putData(bytes);
 
-        // Show a success message or perform any
-        print("Image saved to Firebase Storage");
+        // Show a success message
+        await _showMessageDialog('Image saved to Firebase Storage');
       } catch (e) {
         // Show an error message
-        print("Error saving image: $e");
+        await _showMessageDialog('Error saving image: $e', isError: true);
       }
     } else {
       // Handle the case where no image is generated.
-      print("No image to save");
+      await _showMessageDialog('No image to save', isError: true);
     }
   }
 
+
+  Future<void> _showMessageDialog(String message, {bool isError = false}) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(isError ? 'Error' : 'Success'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

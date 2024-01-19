@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,7 @@ import 'package:mobils/bottom-menu.dart';
 import 'package:mobils/photo.dart';
 import 'package:mobils/store.dart';
 import 'package:path/path.dart';
-
+import 'package:image/image.dart' as img;
 
 import 'package:dart_openai/dart_openai.dart';
 
@@ -26,7 +27,7 @@ class GalleryScreen extends StatefulWidget {
 
 class _GalleryScreenState extends State<GalleryScreen> {
   String? imagePath;
-  String? maskPath;
+
   // Declare a StreamController of List<String>
   late StreamController<List<String>> imageUrlsController;
 
@@ -93,7 +94,6 @@ class _GalleryScreenState extends State<GalleryScreen> {
                           ),
                           onPressed: () async {
                             pickMedia(ImageSource.gallery);
-
                           },
                           child: addButtonStyle("", Icons.add)
                       )
@@ -198,15 +198,19 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
   Future uploadFile() async {
     if (imagePath == null) return;
-    final fileName = basename(File(imagePath as String).path);
+    File fileToUpload = File(imagePath as String);
+    final fileName = basename(fileToUpload.path);
     final uid = await Store.getUser();
     final destination = '$uid/$fileName';
+
+    // Replace 'your_image_file_path.jpg' with the actual path to your image file
+    Uint8List squaredImageBytes = await cropImageToSquare(fileToUpload);
 
     try {
       final ref = firebase_storage.FirebaseStorage.instance
           .ref()
           .child(destination);
-      await ref.putFile(File(imagePath as String));
+      await ref.putData(squaredImageBytes);
     } catch (e) {
       print('error occured $e');
     }
@@ -233,6 +237,36 @@ class _GalleryScreenState extends State<GalleryScreen> {
         ),*/
       ],);
   }
+
+  Future<Uint8List> cropImageToSquare(File imageFile) async {
+    // Read the image from file
+    img.Image? originalImage = img.decodeImage(imageFile.readAsBytesSync());
+
+    // Check if decoding was successful
+    if (originalImage == null) {
+      // Handle the case where decoding failed
+      print('Error decoding image');
+      return Uint8List(0); // Exit the function
+    }
+
+    // Determine the minimum dimension (width or height) to create a square image
+    int minDimension = originalImage.width < originalImage.height
+        ? originalImage.width
+        : originalImage.height;
+
+    // Calculate the cropping area
+    int x = (originalImage.width - minDimension) ~/ 2;
+    int y = (originalImage.height - minDimension) ~/ 2;
+
+    // Crop the image
+    img.Image squaredImage = img.copyCrop(originalImage, x: x, y:y, width: minDimension, height: minDimension);
+
+    // Convert the image to bytes
+    Uint8List croppedBytes = Uint8List.fromList(img.encodePng(squaredImage));
+
+    return croppedBytes;
+  }
+
 
   getAllImagesFromStorage() async {
     final folder = await Store.getUser();
