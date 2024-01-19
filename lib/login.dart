@@ -8,6 +8,8 @@ import 'package:mobils/store.dart';
 import 'package:mobils/smart_editor.dart';
 import 'package:mobils/smart_creator.dart';
 
+import 'main-screen.dart';
+
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -144,7 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const GalleryScreen(),
+                                builder: (context) => const MainScreen(),
                               ),
                             );
                           }
