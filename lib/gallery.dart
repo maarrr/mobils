@@ -6,8 +6,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobils/bottom-menu.dart';
+import 'package:mobils/photo.dart';
 import 'package:mobils/store.dart';
 import 'package:path/path.dart';
 import 'package:image/image.dart' as img;
@@ -33,16 +33,6 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
 // Declare a getter for the stream of image URLs
   Stream<List<String>> get imageUrlsStream => imageUrlsController.stream;
-
-  // A stream of the photos in the Firebase Storage bucket
-  late Stream<List<Reference>> photosStream;
-
-  firebase_storage.FirebaseStorage storage =
-      firebase_storage.FirebaseStorage.instance;
-
-  final storageRef = FirebaseStorage.instance.ref();
-
-
 
 
   @override
@@ -103,28 +93,79 @@ class _GalleryScreenState extends State<GalleryScreen> {
                             minimumSize: const Size(42, 42), //////// HERE
                           ),
                           onPressed: () async {
-                              imagePath = await pickMediaStr(ImageSource.gallery);
-                              uploadFile();
-                              setState(() {});
+                            pickMedia(ImageSource.gallery);
                           },
                           child: addButtonStyle("", Icons.add)
                       )
                     ],
                   ),
-                   Expanded(child: StreamBuilder<List<String>>(
+
+                   Expanded(child:
+                      StreamBuilder<List<String>>(
                         stream: imageUrlsStream, // a stream of image URLs
                         builder: (context, snapshot) {
-                          if (snapshot.hasData) {
+                            if (snapshot.hasData) {
                             // the stream has data
                             final imageUrls = snapshot.data;
-                            return ListView.builder(
+                            return GridView.builder(
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                crossAxisSpacing: 5.0, // adjust as needed
+                                mainAxisSpacing: 5.0, // adjust as needed
+                              ),
+                              itemBuilder: (context, index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    // Handle tap event here, e.g., navigate to a detailed view
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => PhotoScreen(
+                                          image: imageUrls![index],
+                                          // Pass any additional data you may need
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4.0), // adjust as needed
+                                    child: AspectRatio(
+                                      aspectRatio: 1,
+                                      child: ClipRRect(
+                                        borderRadius: const BorderRadius.all(Radius.circular(4.0)),
+                                        child: Image.network(
+                                          imageUrls![index],
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                              itemCount: imageUrls?.length ?? 0,
+                            );
+
+
+                              /*ListView.builder(
+                              shrinkWrap: true,
                               itemCount: imageUrls?.length,
                               itemBuilder: (context, index) {
                                 return ListTile(
-                                  title: Image.network(imageUrls![index]),
+                                  leading: AspectRatio(
+                                    aspectRatio: 1,
+                                    child: ClipRRect(
+                                      borderRadius: const BorderRadius.all(Radius.circular(4.0)),
+                                      child: Image.network(
+                                        imageUrls![index],
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  title: Text('Title $index'),
+                                  subtitle: Text('Subtitle $index'),
                                 );
-                              },
-                            );
+                              },*/
+
                           } else {
                             // the stream has no data yet
                             return const Center(
@@ -148,17 +189,11 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
     if (file != null) {
       imagePath = file.path;
+      uploadFile();
       setState(() {});
     }
-  }
 
-  Future<String?> pickMediaStr(ImageSource source) async {
-    XFile? file;
-    file = await ImagePicker().pickImage(source: source);
-    if (file != null) {
-      return file.path.toString();
-    }
-    return null;
+    getAllImagesFromStorage();
   }
 
   Future uploadFile() async {
@@ -180,7 +215,6 @@ class _GalleryScreenState extends State<GalleryScreen> {
       print('error occured $e');
     }
 
-    getAllImagesFromStorage();
   }
 
   Widget addButtonStyle(String msg, IconData icon) {
@@ -244,14 +278,10 @@ class _GalleryScreenState extends State<GalleryScreen> {
       // Retrieve a list of items (files and subdirectories) within the folder
       ListResult result = await storageFolder.listAll();
 
-      print("result:");
-       List<String> imageUrls = [];
-
-
+      List<String> imageUrls = [];
 
       // Filter and add only image URLs to the list
       for (var item in result.items) {
-
         String imageUrl = await item.getDownloadURL();
         print(imageUrl);
         imageUrls.add(imageUrl);
@@ -261,9 +291,12 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
       // Add the list of image URLs to the stream
       imageUrlsController.add(imageUrls);
+
     } catch (e) {
       // Handle errors, if any
       print('Error getting images from Firebase Storage: $e');
     }
+
+
   }
 }
