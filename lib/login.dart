@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobils/constants.dart';
 import 'package:mobils/gallery.dart';
 import 'package:mobils/sign-in.dart';
+import 'package:mobils/store.dart';
 
 import 'package:mobils/smart_editor.dart';
 import 'package:mobils/smart_creator.dart';
@@ -20,7 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   late String msg = "ERRROR";
 
 
-  //final _auth = FirebaseAuth.instance;
+  final _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -126,18 +128,30 @@ class _LoginScreenState extends State<LoginScreen> {
                     alignment: Alignment.center,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: mainColor,
+                        backgroundColor: primaryColor,
                         shadowColor: secondaryColor,
                         elevation: 3,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(32.0)),
                         minimumSize: const Size(240, 60), //////// HERE
                       ),
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => const GalleryScreen(),
-                        ),
-                        );
+                      onPressed: () async {
+                        try {
+                          final user = await _auth.signInWithEmailAndPassword(
+                              email: email, password: password);
+                          if (user != null) {
+                            Store.saveUser(user.user!.uid);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const GalleryScreen(),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          isError = true;
+                          msg = "Error. Try again.";
+                        }
                       },
                       child: const Text(
                         'Login',

@@ -85,7 +85,7 @@ class _SmartEditorScreenState extends State<SmartEditorScreen> {
       backgroundColor: backgroundColor,
       appBar: AppBar(
         title: Text('Image variations Generator', style: TextStyle(color: textColor)),
-        backgroundColor: mainColor,
+        backgroundColor: primaryColor,
         centerTitle: true,
       ),
       body: Padding(
@@ -95,7 +95,7 @@ class _SmartEditorScreenState extends State<SmartEditorScreen> {
           children: [
             _isLoading
                 ? CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(mainColor),
+              valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
             )
                 : _generatedImage.isNotEmpty
                 ? Image.memory(
@@ -121,7 +121,7 @@ class _SmartEditorScreenState extends State<SmartEditorScreen> {
                 ElevatedButton(
                   onPressed: _pickImage,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: mainColor,
+                    backgroundColor: primaryColor,
                     foregroundColor: textColor,
                   ),
                   child: Text('Generate Image'),
@@ -129,7 +129,7 @@ class _SmartEditorScreenState extends State<SmartEditorScreen> {
                 ElevatedButton(
                   onPressed: () => _saveImage(_generatedImage),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: mainColor,
+                    backgroundColor: primaryColor,
                     foregroundColor: textColor,
                   ),
                   child: Text('Save Image'),

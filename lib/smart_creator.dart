@@ -84,7 +84,7 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
       backgroundColor: backgroundColor,
       appBar: AppBar(
         title: Text('Image Generator', style: TextStyle(color: textColor)),
-        backgroundColor: mainColor,
+        backgroundColor: primaryColor,
         centerTitle: true,
       ),
       body: Padding(
@@ -94,7 +94,7 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
           children: [
             _isLoading
                 ? CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(mainColor),
+              valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
             )
                 : _generatedImage.isNotEmpty
                 ? Image.memory(
@@ -136,7 +136,7 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
                 ElevatedButton(
                   onPressed: _generateImage,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: mainColor,
+                    backgroundColor: primaryColor,
                     foregroundColor: textColor,
                   ),
                   child: Text('Generate Image'),
@@ -144,7 +144,7 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
                 ElevatedButton(
                   onPressed: () => _saveImage(_generatedImage),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: mainColor,
+                    backgroundColor: primaryColor,
                     foregroundColor: textColor,
                   ),
                   child: Text('Save Image'),
