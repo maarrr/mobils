@@ -5,6 +5,7 @@ import 'package:dart_openai/dart_openai.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:mobils/constants.dart';
+import 'package:mobils/store.dart';
 
 class SmartCreatorScreen extends StatefulWidget {
   const SmartCreatorScreen({Key? key}) : super(key: key);
@@ -51,10 +52,12 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
         final storageRef = firebase_storage.FirebaseStorage.instance.ref();
 
         // Generate a unique filename for the image
+        final uid = await Store.getUser();
         String filename = 'creations/image_${DateTime.now().millisecondsSinceEpoch}.png';
+        final destination = '$uid/$filename';
 
         // Upload the image to Firebase Storage
-        await storageRef.child(filename).putData(bytes);
+        await storageRef.child(destination).putData(bytes);
 
         // Show a success message
         await _showMessageDialog('Image saved to Firebase Storage');
