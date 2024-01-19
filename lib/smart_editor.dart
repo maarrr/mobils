@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:mobils/constants.dart';
 import 'package:mobils/store.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'bottom-menu.dart';
 
@@ -25,6 +26,10 @@ class _SmartEditorScreenState extends State<SmartEditorScreen> {
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+
+
+
 
     if (pickedFile != null) {
       String imagePath = pickedFile.path.toString();
@@ -149,7 +154,7 @@ class _SmartEditorScreenState extends State<SmartEditorScreen> {
                     backgroundColor: primaryColor,
                     foregroundColor: textColor,
                   ),
-                  child: Text('Generate Image'),
+                  child: Text('Pick Image'),
                 ),
                 ElevatedButton(
                   onPressed: () => _saveImage(_generatedImage),

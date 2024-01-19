@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:dart_openai/dart_openai.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:mobils/constants.dart';
@@ -25,6 +26,7 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
     setState(() {
       _isLoading = true;
       _generatedImage = ''; // Reset the previous image
+
     });
 
     try {
@@ -109,25 +111,28 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _isLoading
-                ? CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
+                ? SpinKitSpinningLines(
+              color: primaryColor,
+              size: 160.0,
+              duration: const Duration(seconds: 2),
             )
                 : _generatedImage.isNotEmpty
                 ? Image.memory(
               base64.decode(_generatedImage),
-              height: 200,
-              width: 200,
+              height: 250,
+              width: 250,
               fit: BoxFit.cover,
             )
                 : Container(
-              width: 200,
-              height: 200,
-              color: Colors.grey,
-              child: Icon(
-                Icons.image,
-                size: 100,
-                color: Colors.white,
-              ),
+              width: 250,
+              height: 250,
+              margin: EdgeInsets.only(bottom: 30),
+              color: backgroundColor,
+              child: SpinKitCubeGrid(
+                color: primaryColor,
+                size: 160.0,
+                duration: const Duration(seconds: 2),
+              )
             ),
             SizedBox(height: 16),
             TextField(
