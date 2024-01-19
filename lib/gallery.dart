@@ -9,6 +9,7 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:mobils/bottom-menu.dart';
 import 'package:mobils/photo.dart';
 import 'package:mobils/store.dart';
+import 'package:mobils/wrap-list.dart';
 import 'package:path/path.dart';
 import 'package:image/image.dart' as img;
 
@@ -107,65 +108,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                             if (snapshot.hasData) {
                             // the stream has data
                             final imageUrls = snapshot.data;
-                            return GridView.builder(
-                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 3,
-                                crossAxisSpacing: 5.0, // adjust as needed
-                                mainAxisSpacing: 5.0, // adjust as needed
-                              ),
-                              itemBuilder: (context, index) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    // Handle tap event here, e.g., navigate to a detailed view
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => PhotoScreen(
-                                          image: imageUrls![index],
-                                          // Pass any additional data you may need
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(4.0), // adjust as needed
-                                    child: AspectRatio(
-                                      aspectRatio: 1,
-                                      child: ClipRRect(
-                                        borderRadius: const BorderRadius.all(Radius.circular(4.0)),
-                                        child: Image.network(
-                                          imageUrls![index],
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                              itemCount: imageUrls?.length ?? 0,
-                            );
-
-
-                              /*ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: imageUrls?.length,
-                              itemBuilder: (context, index) {
-                                return ListTile(
-                                  leading: AspectRatio(
-                                    aspectRatio: 1,
-                                    child: ClipRRect(
-                                      borderRadius: const BorderRadius.all(Radius.circular(4.0)),
-                                      child: Image.network(
-                                        imageUrls![index],
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  title: Text('Title $index'),
-                                  subtitle: Text('Subtitle $index'),
-                                );
-                              },*/
-
+                            return WrapList(images: imageUrls!, elementPerRow: 3);
                           } else {
                             // the stream has no data yet
                             return const Center(

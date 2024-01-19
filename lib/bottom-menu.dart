@@ -3,6 +3,7 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:mobils/constants.dart';
+import 'package:mobils/main-screen.dart';
 import 'package:mobils/smart_creator.dart';
 import 'package:mobils/smart_editor.dart';
 
@@ -30,7 +31,7 @@ class BottomMenu extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const GalleryScreen(),
+                    builder: (context) => const MainScreen(),
                   ),
                 );
               },
