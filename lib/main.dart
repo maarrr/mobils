@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mobils/constants.dart';
 import 'package:mobils/login.dart';
-
+import 'package:dart_openai/dart_openai.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  OpenAI.apiKey = "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";
+  OpenAI.organization = null;
   runApp(const MyApp());
 }
 
