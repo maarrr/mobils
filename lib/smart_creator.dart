@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:mobils/constants.dart';
 
+import 'bottom-menu.dart';
+
 class SmartCreatorScreen extends StatefulWidget {
   const SmartCreatorScreen({Key? key}) : super(key: key);
 
@@ -154,6 +156,7 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
           ],
         ),
       ),
+      bottomNavigationBar: const BottomMenu(),
     );
   }
 }
