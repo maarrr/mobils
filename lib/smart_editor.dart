@@ -8,6 +8,8 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:mobils/constants.dart';
 
+import 'bottom-menu.dart';
+
 class SmartEditorScreen extends StatefulWidget {
   const SmartEditorScreen({Key? key}) : super(key: key);
 
@@ -139,6 +141,7 @@ class _SmartEditorScreenState extends State<SmartEditorScreen> {
           ],
         ),
       ),
+      bottomNavigationBar: const BottomMenu(),
     );
   }
 }
