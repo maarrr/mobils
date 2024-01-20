@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:dart_openai/dart_openai.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:mobils/constants.dart';
 import 'package:mobils/store.dart';
+import 'package:mobils/utils.dart';
 
 import 'components/menu.dart';
 
@@ -25,6 +27,7 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
     setState(() {
       _isLoading = true;
       _generatedImage = ''; // Reset the previous image
+
     });
 
     try {
@@ -45,54 +48,6 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
     }
   }
 
-  Future<void> _saveImage(String base64Image) async {
-    if (_generatedImage.isNotEmpty) {
-      try {
-        Uint8List bytes = base64.decode(_generatedImage);
-
-        // Create a reference to the Firebase Storage bucket
-        final storageRef = firebase_storage.FirebaseStorage.instance.ref();
-
-        // Generate a unique filename for the image
-        final uid = await Store.getUser();
-        String filename = 'creations/image_${DateTime.now().millisecondsSinceEpoch}.png';
-        final destination = '$uid/$filename';
-
-        // Upload the image to Firebase Storage
-        await storageRef.child(destination).putData(bytes);
-
-        // Show a success message
-        await _showMessageDialog('Image saved to Firebase Storage');
-      } catch (e) {
-        // Show an error message
-        await _showMessageDialog('Error saving image: $e', isError: true);
-      }
-    } else {
-      // Handle the case where no image is generated.
-      await _showMessageDialog('No image to save', isError: true);
-    }
-  }
-
-
-  Future<void> _showMessageDialog(String message, {bool isError = false}) async {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(isError ? 'Error' : 'Success'),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,25 +64,28 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _isLoading
-                ? CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
+                ? SpinKitSpinningLines(
+              color: primaryColor,
+              size: 160.0,
+              duration: const Duration(seconds: 2),
             )
                 : _generatedImage.isNotEmpty
                 ? Image.memory(
               base64.decode(_generatedImage),
-              height: 200,
-              width: 200,
+              height: 250,
+              width: 250,
               fit: BoxFit.cover,
             )
                 : Container(
-              width: 200,
-              height: 200,
-              color: Colors.grey,
-              child: Icon(
-                Icons.image,
-                size: 100,
-                color: Colors.white,
-              ),
+              width: 250,
+              height: 250,
+              margin: EdgeInsets.only(bottom: 30),
+              color: backgroundColor,
+              child: SpinKitCubeGrid(
+                color: primaryColor,
+                size: 160.0,
+                duration: const Duration(seconds: 2),
+              )
             ),
             SizedBox(height: 16),
             TextField(
@@ -158,7 +116,7 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
                   child: Text('Generate Image'),
                 ),
                 ElevatedButton(
-                  onPressed: () => _saveImage(_generatedImage),
+                  onPressed: () => ImageUtils.saveImage(context,_generatedImage,"creations"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
                     foregroundColor: textColor,

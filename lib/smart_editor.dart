@@ -7,6 +7,8 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:mobils/constants.dart';
+import 'package:mobils/store.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 
 class SmartEditorScreen extends StatefulWidget {
@@ -23,6 +25,10 @@ class _SmartEditorScreenState extends State<SmartEditorScreen> {
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+
+
+
 
     if (pickedFile != null) {
       String imagePath = pickedFile.path.toString();
@@ -57,27 +63,49 @@ class _SmartEditorScreenState extends State<SmartEditorScreen> {
   Future<void> _saveImage(String base64Image) async {
     if (_generatedImage.isNotEmpty) {
       try {
-        Uri? imageUrl = Uri.tryParse(_generatedImage);
-        if (imageUrl == null) {
-          print("Invalid URL: $_generatedImage");
-          return;
-        }
+        Uint8List bytes = base64.decode(_generatedImage);
 
-        var response = await http.get(imageUrl);
-        Uint8List bytes = response.bodyBytes;
-
+        // Create a reference to the Firebase Storage bucket
         final storageRef = firebase_storage.FirebaseStorage.instance.ref();
-        String filename = 'image_${DateTime.now().millisecondsSinceEpoch}.png';
 
-        await storageRef.child(filename).putData(bytes);
+        // Generate a unique filename for the image
+        final uid = await Store.getUser();
+        String filename = 'editions/image_${DateTime.now().millisecondsSinceEpoch}.png';
+        final destination = '$uid/$filename';
 
-        print("Image saved to Firebase Storage");
+        // Upload the image to Firebase Storage
+        await storageRef.child(destination).putData(bytes);
+
+        // Show a success message
+        await _showMessageDialog('Image saved to Firebase Storage');
       } catch (e) {
-        print("Error saving image: $e");
+        // Show an error message
+        await _showMessageDialog('Error saving image: $e', isError: true);
       }
     } else {
-      print("No image to save");
+      // Handle the case where no image is generated.
+      await _showMessageDialog('No image to save', isError: true);
     }
+  }
+
+  Future<void> _showMessageDialog(String message, {bool isError = false}) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(isError ? 'Error' : 'Success'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -125,7 +153,7 @@ class _SmartEditorScreenState extends State<SmartEditorScreen> {
                     backgroundColor: primaryColor,
                     foregroundColor: textColor,
                   ),
-                  child: Text('Generate Image'),
+                  child: Text('Pick Image'),
                 ),
                 ElevatedButton(
                   onPressed: () => _saveImage(_generatedImage),

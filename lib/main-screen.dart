@@ -21,7 +21,11 @@ import 'package:image/image.dart' as img;
 
 import 'package:dart_openai/dart_openai.dart';
 
+// spinkit
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'components/loading-list.dart';
 import 'constants.dart';
+
 
 
 
@@ -48,7 +52,6 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     getName();
     start();
-
   }
 
   @override
@@ -78,7 +81,7 @@ class _MainScreenState extends State<MainScreen> {
                         MaterialPageRoute(
                           builder: (context) => const SmartCreatorScreen(),
                         ),
-                      );
+                      ).then((value) => _onReturn());
                     },
                 ),
               ],
@@ -99,12 +102,10 @@ class _MainScreenState extends State<MainScreen> {
                             size: 18
                         ));
                   } else {
-                    return WrapList(images: imageUrls!, elementPerRow: 4);
+                    return WrapList(images: imageUrls!, elementPerRow: 4, onReturn: _onReturn);
                   }
                 } else {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return LoadingList(elementPerRow: 4, count: 8);
                 }
               },
             ),
@@ -132,12 +133,10 @@ class _MainScreenState extends State<MainScreen> {
                             size: 18
                         ));
                   } else {
-                    return WrapList(images: imageUrls!, elementPerRow: 4);
+                    return WrapList(images: imageUrls!, elementPerRow: 4, onReturn: _onReturn);
                   }
                 } else {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return LoadingList(elementPerRow: 4, count: 8);
                 }
               },
             )
@@ -154,6 +153,10 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  void _onReturn() {
+    start();
+    setState(() {});
+  }
 
   Future<List<String>> getAllImagesFromStorage(String folder) async {
 

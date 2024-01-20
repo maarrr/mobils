@@ -13,6 +13,8 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'components/button-text-icon.dart';
 import 'constants.dart';
 import 'package:http/http.dart' as http;
+import 'package:mobils/utils.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class PhotoScreen extends StatefulWidget {
   final image;
@@ -55,14 +57,14 @@ class _PhotoScreenState extends State<PhotoScreen> {
               ),
               const SizedBox(height: 30),
               _isLoading ?
-              const Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
-                      ),
-                    ],
-                  )
+                AspectRatio (
+                  aspectRatio: 1.0 / 1.0,
+                  child: SpinKitSpinningLines(
+                    color: primaryColor,
+                    size: 160.0,
+                    duration: const Duration(seconds: 2),
+                  ),
+                )
                   : _generatedImage.isNotEmpty ?
                   AspectRatio(
                       aspectRatio: 1.0 / 1.0,
@@ -122,7 +124,6 @@ class _PhotoScreenState extends State<PhotoScreen> {
         size: OpenAIImageSize.size1024,
         responseFormat: OpenAIImageResponseFormat.b64Json,
       );
-      print(imageVariation.data[0].url.toString());
       setState(() {
         _generatedImage = imageVariation.data[0].b64Json.toString();
       });
@@ -174,27 +175,10 @@ class _PhotoScreenState extends State<PhotoScreen> {
 
  _save() async {
    if (_generatedImage.isNotEmpty) {
-     try {
-       Uri? imageUrl = Uri.tryParse(_generatedImage);
-       if (imageUrl == null) {
-         print("Invalid URL: $_generatedImage");
-         return;
-       }
-
-       var response = await http.get(imageUrl);
-       Uint8List bytes = response.bodyBytes;
-
-       final storageRef = firebase_storage.FirebaseStorage.instance.ref();
-       String filename = 'image_${DateTime.now().millisecondsSinceEpoch}.png';
-
-       await storageRef.child(filename).putData(bytes);
-
-       print("Image saved to Firebase Storage");
-     } catch (e) {
-       print("Error saving image: $e");
-     }
+     ImageUtils.saveImage(context, _generatedImage, "edits");
    } else {
-     print("No image to save");
+      // Handle the case where no image is generated.
+      await ImageUtils.showMessageDialog(context, 'No image to save', isError: true);
    }
  }
 

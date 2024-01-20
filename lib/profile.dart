@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mobils/components/button-text-icon.dart';
 import 'package:mobils/components/custom-text-file.dart';
 import 'package:mobils/components/header.dart';
+import 'package:mobils/login.dart';
 
 import 'components/button.dart';
 import 'components/custom-text.dart';
@@ -146,6 +147,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (e) {
       print('Error signing out: $e');
     }
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LoginScreen(),
+      ),
+          (route) => false,
+    );
   }
 
 }
