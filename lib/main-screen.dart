@@ -48,7 +48,6 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     getName();
     start();
-
   }
 
   @override
@@ -99,7 +98,7 @@ class _MainScreenState extends State<MainScreen> {
                             size: 18
                         ));
                   } else {
-                    return WrapList(images: imageUrls!, elementPerRow: 4);
+                    return WrapList(images: imageUrls!, elementPerRow: 4, onReturn: _onReturn);
                   }
                 } else {
                   return const Center(
@@ -149,6 +148,9 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  void _onReturn() {
+    start();
+  }
 
   Future<List<String>> getAllImagesFromStorage(String folder) async {
 
@@ -187,7 +189,7 @@ class _MainScreenState extends State<MainScreen> {
     generateController = StreamController<List<String>>.broadcast();
 
     final user = await Store.getUser();
-    final editPath = '$user/editions';
+    final editPath = '$user/edits';
     final createPath = '$user/creations';
 
     generateController.add(await getAllImagesFromStorage(createPath));

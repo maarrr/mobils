@@ -12,6 +12,7 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobils/utils.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class PhotoScreen extends StatefulWidget {
   final image;
@@ -59,14 +60,14 @@ class _PhotoScreenState extends State<PhotoScreen> {
               ),
               const SizedBox(height: 30),
               _isLoading ?
-              const Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
-                      ),
-                    ],
-                  )
+                AspectRatio (
+                  aspectRatio: 1.0 / 1.0,
+                  child: SpinKitSpinningLines(
+                    color: primaryColor,
+                    size: 160.0,
+                    duration: const Duration(seconds: 2),
+                  ),
+                )
                   : _generatedImage.isNotEmpty ?
                   AspectRatio(
                       aspectRatio: 1.0 / 1.0,
@@ -187,7 +188,7 @@ class _PhotoScreenState extends State<PhotoScreen> {
 
  _save() async {
    if (_generatedImage.isNotEmpty) {
-     ImageUtils.saveImage(context, _generatedImage, "editions");
+     ImageUtils.saveImage(context, _generatedImage, "edits");
    } else {
       // Handle the case where no image is generated.
       await ImageUtils.showMessageDialog(context, 'No image to save', isError: true);

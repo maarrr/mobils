@@ -48,54 +48,6 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
     }
   }
 
-  Future<void> _saveImage(String base64Image) async {
-    if (_generatedImage.isNotEmpty) {
-      try {
-        Uint8List bytes = base64.decode(_generatedImage);
-
-        // Create a reference to the Firebase Storage bucket
-        final storageRef = firebase_storage.FirebaseStorage.instance.ref();
-
-        // Generate a unique filename for the image
-        final uid = await Store.getUser();
-        String filename = 'creations/image_${DateTime.now().millisecondsSinceEpoch}.png';
-        final destination = '$uid/$filename';
-
-        // Upload the image to Firebase Storage
-        await storageRef.child(destination).putData(bytes);
-
-        // Show a success message
-        await _showMessageDialog('Image saved to Firebase Storage');
-      } catch (e) {
-        // Show an error message
-        await _showMessageDialog('Error saving image: $e', isError: true);
-      }
-    } else {
-      // Handle the case where no image is generated.
-      await _showMessageDialog('No image to save', isError: true);
-    }
-  }
-
-
-  Future<void> _showMessageDialog(String message, {bool isError = false}) async {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(isError ? 'Error' : 'Success'),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
