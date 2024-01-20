@@ -9,19 +9,11 @@ const secondaryColor = Color(0xFF03DAC6);
 const backgroundColor = Color(0xFF121212);
 const surfaceColor = Color(0xFF2D2D2D);
 const textColor = Color(0xFFE0E0E0);
-const errorColor = Color(0xFFCF6679);
+const errorColor = Colors.red;
+
+const fontFamily = 'Work Sans';
 
 
-
-const decoration = InputDecoration(
-  border: OutlineInputBorder(
-    borderRadius: BorderRadius.all(Radius.circular(8.0)),
-  ),
-  enabledBorder: OutlineInputBorder(
-    borderSide: BorderSide(color: Colors.white, width: 1.0),
-    borderRadius: BorderRadius.all(Radius.circular(8.0)),
-  ),
-);
 
 
 

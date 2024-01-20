@@ -6,10 +6,10 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:mobils/bottom-menu.dart';
+import 'package:mobils/components/bottom-menu.dart';
 import 'package:mobils/photo.dart';
 import 'package:mobils/store.dart';
-import 'package:mobils/wrap-list.dart';
+import 'package:mobils/components/wrap-list.dart';
 import 'package:path/path.dart';
 import 'package:image/image.dart' as img;
 

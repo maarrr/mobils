@@ -4,10 +4,11 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:mobils/constants.dart';
 import 'package:mobils/main-screen.dart';
+import 'package:mobils/profile.dart';
 import 'package:mobils/smart_creator.dart';
 import 'package:mobils/smart_editor.dart';
 
-import 'gallery.dart';
+import '../gallery.dart';
 
 const iconSize = 36.00;
 
@@ -49,18 +50,6 @@ class BottomMenu extends StatelessWidget {
               },
             ),
             IconButton(
-              tooltip: 'Varian',
-              icon: const Icon(Icons.edit_outlined, size: iconSize),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SmartEditorScreen(),
-                  ),
-                );
-              },
-            ),
-            IconButton(
               tooltip: 'Generate',
               icon: const Icon(Icons.add_photo_alternate_outlined,  size: iconSize),
               onPressed: () {
@@ -68,6 +57,18 @@ class BottomMenu extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const SmartCreatorScreen(),
+                  ),
+                );
+              },
+            ),
+            IconButton(
+              tooltip: 'Profile',
+              icon: const Icon(Icons.perm_identity_sharp, size: iconSize),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfileScreen(),
                   ),
                 );
               },

@@ -2,15 +2,18 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:mobils/bottom-menu.dart';
-import 'package:mobils/custom-text.dart';
+import 'package:mobils/components/bottom-menu.dart';
+import 'package:mobils/components/custom-text.dart';
+import 'package:mobils/components/header.dart';
 import 'package:mobils/photo.dart';
 import 'package:mobils/store.dart';
-import 'package:mobils/wrap-list.dart';
+import 'package:mobils/components/wrap-list.dart';
 import 'package:path/path.dart';
 import 'package:image/image.dart' as img;
 
@@ -28,6 +31,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  late String _username;
 
   late StreamController<List<String>> editController;
   late StreamController<List<String>> generateController;
@@ -40,7 +44,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   initState() {
     super.initState();
-
+    getName();
     start();
 
   }
@@ -49,19 +53,14 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const CustomText(text: "PixelGenius", size: 24),
-        centerTitle: true,
-        backgroundColor: backgroundColor,
-      ),
+      appBar: const Header(),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CustomText(text: "Welcome!", size: 38),
+            CustomText(text: "Welcome $_username!", size: 38),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment:  MainAxisAlignment.spaceBetween,
@@ -81,13 +80,24 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ],
             ),
+          Expanded(
+            child:
             StreamBuilder<List<String>>(
               stream: imageGenerateStream, // a stream of image URLs
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   // the stream has data
                   final imageUrls = snapshot.data;
-                  return WrapList(images: imageUrls!, elementPerRow: 4);
+                  if(imageUrls!.isEmpty) {
+                    return const Padding(
+                        padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+                        child: CustomText(
+                            text: "No generated images yet.",
+                            size: 18
+                        ));
+                  } else {
+                    return WrapList(images: imageUrls!, elementPerRow: 4);
+                  }
                 } else {
                   return const Center(
                     child: CircularProgressIndicator(),
@@ -95,29 +105,40 @@ class _MainScreenState extends State<MainScreen> {
                 }
               },
             ),
-            Row(
+          ),
+            const Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment:  MainAxisAlignment.spaceBetween,
               children: [
-                const CustomText(text: "Edited images", size: 24),
+                CustomText(text: "Edited images", size: 24),
               ],
             ),
+          Expanded(
+            child:
             StreamBuilder<List<String>>(
               stream: imageEditStream, // a stream of image URLs
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   // the stream has data
                   final imageUrls = snapshot.data;
-                  return WrapList(images: imageUrls!, elementPerRow: 4);
-
+                  if(imageUrls!.isEmpty) {
+                    return const Padding(
+                        padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+                        child: CustomText(
+                            text: "No edited images yet.",
+                            size: 18
+                        ));
+                  } else {
+                    return WrapList(images: imageUrls!, elementPerRow: 4);
+                  }
                 } else {
-
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
               },
             )
+          )
           ],
         )
       ),
@@ -169,5 +190,14 @@ class _MainScreenState extends State<MainScreen> {
     generateController.add(await getAllImagesFromStorage(createPath));
 
     editController.add(await getAllImagesFromStorage(editPath));
+  }
+
+  getName() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if(user != null){
+      setState(() {
+        _username = user.displayName!;
+      });
+    }
   }
 }
