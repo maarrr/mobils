@@ -10,8 +10,7 @@ class WrapList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-      return Expanded(
-          child:
+      return
           GridView.builder(
                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                  crossAxisCount: 4,
@@ -48,6 +47,6 @@ class WrapList extends StatelessWidget {
                    ),
                  );
                },
-           ));
+           );
   }
 }

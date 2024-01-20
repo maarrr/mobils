@@ -2,19 +2,23 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:mobils/bottom-menu.dart';
+import 'package:mobils/components/bottom-menu.dart';
+import 'package:mobils/components/custom-icon-button.dart';
+import 'package:mobils/components/header.dart';
 import 'package:mobils/photo.dart';
 import 'package:mobils/store.dart';
-import 'package:mobils/wrap-list.dart';
+import 'package:mobils/components/wrap-list.dart';
 import 'package:path/path.dart';
 import 'package:image/image.dart' as img;
 
 import 'package:dart_openai/dart_openai.dart';
 
+import 'components/custom-text.dart';
 import 'constants.dart';
 
 
@@ -48,19 +52,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: backgroundColor,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: const Text(
-            'PixelGenius',
-            style: TextStyle(
-              color: textColor,
-              fontSize: 24,
-              fontFamily: 'Work Sans',
-            ),
-          ),
-          centerTitle: true,
-          backgroundColor: backgroundColor,
-        ),
+        appBar: Header(),
         body:Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -70,34 +62,22 @@ class _GalleryScreenState extends State<GalleryScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: primaryColor,
-                            shadowColor: secondaryColor,
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50.0)),
-                            minimumSize: const Size(42, 42), //////// HERE
-                          ),
-                          onPressed: () {
-                            pickMedia(ImageSource.camera);
-                          },
-                          child: addButtonStyle("", Icons.camera_alt)
+                      CustomIconButton(
+                        icon: Icons.camera_alt,
+                        size: 24,
+                        color: primaryColor,
+                        onPressed: () async {
+                          pickMedia(ImageSource.camera);
+                        },
                       ),
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: primaryColor,
-                            shadowColor: secondaryColor,
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50.0)),
-                            minimumSize: const Size(42, 42), //////// HERE
-                          ),
-                          onPressed: () async {
-                            pickMedia(ImageSource.gallery);
-                          },
-                          child: addButtonStyle("", Icons.add)
-                      )
+                      CustomIconButton(
+                        icon: Icons.photo_library_outlined,
+                        size: 24,
+                        color: primaryColor,
+                        onPressed: () async {
+                          pickMedia(ImageSource.gallery);
+                        },
+                      ),
                     ],
                   ),
 
@@ -108,7 +88,16 @@ class _GalleryScreenState extends State<GalleryScreen> {
                             if (snapshot.hasData) {
                             // the stream has data
                             final imageUrls = snapshot.data;
-                            return WrapList(images: imageUrls!, elementPerRow: 3);
+                            if(imageUrls!.isEmpty) {
+                              return const Padding(
+                                  padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+                                  child: CustomText(
+                                      text: "Gallery is empty. Add some images!",
+                                      size: 18
+                                  ));
+                            } else {
+                              return WrapList(images: imageUrls, elementPerRow: 3);
+                            }
                           } else {
                             // the stream has no data yet
                             return const Center(
@@ -133,7 +122,6 @@ class _GalleryScreenState extends State<GalleryScreen> {
     if (file != null) {
       imagePath = file.path;
       uploadFile();
-      setState(() {});
     }
 
     getAllImagesFromStorage();
@@ -143,8 +131,14 @@ class _GalleryScreenState extends State<GalleryScreen> {
     if (imagePath == null) return;
     File fileToUpload = File(imagePath as String);
     final fileName = basename(fileToUpload.path);
-    final uid = await Store.getUser();
-    final destination = '$uid/$fileName';
+
+    User? user = FirebaseAuth.instance.currentUser;
+    if(user == null) {
+      print("Error");
+      return;
+    }
+
+    final destination = '${user.uid}/$fileName';
 
     // Replace 'your_image_file_path.jpg' with the actual path to your image file
     Uint8List squaredImageBytes = await cropImageToSquare(fileToUpload);
@@ -158,27 +152,6 @@ class _GalleryScreenState extends State<GalleryScreen> {
       print('error occured $e');
     }
 
-  }
-
-  Widget addButtonStyle(String msg, IconData icon) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          icon,
-          color: textColor,
-          size: 24,
-        ),
-        /*SizedBox(width: 8), // Adjust the space between icon and text
-        Text(
-          msg,
-          style: TextStyle(
-            color: textColor,
-            fontSize: 24,
-            fontFamily: 'Work Sans',
-          ),
-        ),*/
-      ],);
   }
 
   Future<Uint8List> cropImageToSquare(File imageFile) async {
@@ -212,34 +185,39 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
 
   getAllImagesFromStorage() async {
-    final folder = await Store.getUser();
+    User? user = FirebaseAuth.instance.currentUser;
+    if(user == null) {
+      print("Error");
+      return;
+    }
+      final folder = await user.uid;
 
-    try {
-      // Reference to the folder in Firebase Storage
-      Reference storageFolder = FirebaseStorage.instance.ref().child(folder!);
+      try {
+        // Reference to the folder in Firebase Storage
+        Reference storageFolder = FirebaseStorage.instance.ref().child(folder!);
 
-      // Retrieve a list of items (files and subdirectories) within the folder
-      ListResult result = await storageFolder.listAll();
+        // Retrieve a list of items (files and subdirectories) within the folder
+        ListResult result = await storageFolder.listAll();
 
-      List<String> imageUrls = [];
+        List<String> imageUrls = [];
 
-      // Filter and add only image URLs to the list
-      for (var item in result.items) {
-        String imageUrl = await item.getDownloadURL();
-        print(imageUrl);
-        imageUrls.add(imageUrl);
+        // Filter and add only image URLs to the list
+        for (var item in result.items) {
+          String imageUrl = await item.getDownloadURL();
+          print(imageUrl);
+          imageUrls.add(imageUrl);
 
 
+        }
+
+        // Add the list of image URLs to the stream
+        imageUrlsController.add(imageUrls);
+
+      } catch (e) {
+        // Handle errors, if any
+        print('Error getting images from Firebase Storage: $e');
       }
-
-      // Add the list of image URLs to the stream
-      imageUrlsController.add(imageUrls);
-
-    } catch (e) {
-      // Handle errors, if any
-      print('Error getting images from Firebase Storage: $e');
     }
 
 
-  }
 }
