@@ -136,11 +136,11 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
     if (file != null) {
       imagePath = file.path;
-      uploadFile();
+      await uploadFile();
     }
   }
 
-  Future uploadFile() async {
+  Future<void> uploadFile() async {
     if (imagePath == null) return;
     File fileToUpload = File(imagePath as String);
     final fileName = basename(fileToUpload.path);
