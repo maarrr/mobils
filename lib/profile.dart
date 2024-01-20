@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:mobils/components/button-text-icon.dart';
 import 'package:mobils/components/custom-text-file.dart';
 import 'package:mobils/components/header.dart';
-import 'package:mobils/login.dart';
+import 'package:mobils/utils.dart';
 
+import 'package:mobils/login.dart';
 import 'components/button.dart';
 import 'components/custom-text.dart';
 import 'components/menu.dart';
@@ -26,7 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _displayNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
+  bool _isError = false;
 
   @override
   void initState() {
@@ -97,7 +98,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       textText: 'Update profile',
                       sizeText: 24,
                       color: primaryColor,
-                      onPressed: _update
+                      onPressed: () async{
+                        await _update();
+                        if(mounted) {     // To avoid warning: It's to check if the widget is mounted before calling setState
+                          if (_isError) {
+                            await ImageUtils.showMessageDialog(context, "Error updating the profile", isError: true);
+                            _isError = false;
+                          } else {
+                            await ImageUtils.showMessageDialog(context, "Profile updated successfully");
+                          }
+                        }
+                      },
                   ),
               )
             ],
@@ -116,7 +127,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   }
 
-  _update() async {
+  Future<void> _update() async {
     try {
       User? user = _auth.currentUser;
 
@@ -129,15 +140,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           await user.updateEmail(_emailController.text);
         }
 
-        if(_passwordController.text.isNotEmpty || _passwordController.text != null){
+        if(_passwordController.text.isNotEmpty || _passwordController.text != ""){
           await user.updatePassword(_passwordController.text);
         }
 
         await user.reload();
-
+        _isError = false;
       }
     } catch (e) {
-      print('Error');
+      print("Error updating user data: $e");
+      _isError = true;
     }
   }
 
