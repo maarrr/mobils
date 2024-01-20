@@ -30,12 +30,12 @@ class Menu extends StatelessWidget {
           label: 'Main',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.photo_library_outlined),
-          label: 'Gallery',
-        ),
-        BottomNavigationBarItem(
           icon: Icon(Icons.gesture),
           label: 'Generator',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.photo_library_outlined),
+          label: 'Gallery',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.perm_identity_sharp),
@@ -56,13 +56,13 @@ class Menu extends StatelessWidget {
       case 1:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => GalleryScreen()),
+          MaterialPageRoute(builder: (context) => SmartCreatorScreen()),
         );
         break;
       case 2:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => SmartCreatorScreen()),
+          MaterialPageRoute(builder: (context) => GalleryScreen()),
         );
         break;
       case 3:

@@ -2,7 +2,6 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobils/components/bottom-menu.dart';
 import 'package:mobils/components/button-text-icon.dart';
 import 'package:mobils/components/custom-text-file.dart';
 import 'package:mobils/components/header.dart';

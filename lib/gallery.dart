@@ -7,7 +7,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:mobils/components/bottom-menu.dart';
 import 'package:mobils/components/button-text-icon.dart';
 import 'package:mobils/components/custom-icon-button.dart';
 import 'package:mobils/components/header.dart';
@@ -115,7 +114,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
               ),
             ),
       bottomNavigationBar: Menu(
-        currentIndex: 1,
+        currentIndex: 2,
         onTap: (index) {
           Menu.navigateToScreen(context, index);
         },

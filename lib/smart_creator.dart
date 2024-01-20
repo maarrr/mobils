@@ -7,7 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:mobils/constants.dart';
 import 'package:mobils/store.dart';
 
-import 'components/bottom-menu.dart';
+import 'components/menu.dart';
 
 class SmartCreatorScreen extends StatefulWidget {
   const SmartCreatorScreen({Key? key}) : super(key: key);
@@ -170,7 +170,12 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: const BottomMenu(),
+      bottomNavigationBar: Menu(
+        currentIndex: 1,
+        onTap: (index) {
+          Menu.navigateToScreen(context, index);
+        },
+      ),
     );
   }
 }
