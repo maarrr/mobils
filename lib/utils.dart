@@ -2,10 +2,14 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
-import 'package:mobils/store.dart';
 
 class ImageUtils {
+
+  static final FirebaseAuth _auth = FirebaseAuth.instance;
+
   static Future<void> saveImage(BuildContext context, String generatedImage, String folder) async {
     if (generatedImage.isNotEmpty) {
       try {
@@ -15,7 +19,8 @@ class ImageUtils {
         final storageRef = firebase_storage.FirebaseStorage.instance.ref();
 
         // Generate a unique filename for the image
-        final uid = await Store.getUser();
+        User? user = _auth.currentUser;
+        final uid = user!.uid;
         String filename = '$folder/image_${DateTime.now().millisecondsSinceEpoch}.png';
         final destination = '$uid/$filename';
 
