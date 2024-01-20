@@ -9,9 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:mobils/components/bottom-menu.dart';
+import 'package:mobils/components/custom-icon-button.dart';
 import 'package:mobils/components/custom-text.dart';
 import 'package:mobils/components/header.dart';
 import 'package:mobils/photo.dart';
+import 'package:mobils/smart_creator.dart';
 import 'package:mobils/store.dart';
 import 'package:mobils/components/wrap-list.dart';
 import 'package:path/path.dart';
@@ -61,22 +63,23 @@ class _MainScreenState extends State<MainScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             CustomText(text: "Welcome $_username!", size: 38),
+            const SizedBox(height: 16),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment:  MainAxisAlignment.spaceBetween,
               children: [
-                CustomText(text: "Generated images", size: 24),
-                ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      foregroundColor: textColor,
-                    ),
-                    child: const Padding(
-                        padding: EdgeInsets.all(6.0),
-                        child: Icon(Icons.add),
-                    )// Adjust the spacing as needed
-
+                const CustomText(text: "Generated images", size: 24),
+                CustomIconButton(
+                    icon: Icons.add,
+                    size: 24,
+                    color: primaryColor,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SmartCreatorScreen(),
+                        ),
+                      );
+                    },
                 ),
               ],
             ),

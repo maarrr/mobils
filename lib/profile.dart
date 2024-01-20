@@ -44,6 +44,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  @override
+  void dispose() {
+    _displayNameController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
 
 
   @override
@@ -77,7 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: ElevatedButton.icon(
         onPressed: () {
-          // Add your logout logic here
+          signOut();
         },
         icon: const Icon(Icons.logout, color: textColor), // Icon on the left
         label: const CustomText(text: 'Logout', size: 18) , // Text on the right
