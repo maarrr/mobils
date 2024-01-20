@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:mobils/constants.dart';
 import 'package:mobils/store.dart';
+import 'package:mobils/utils.dart';
 
 import 'components/bottom-menu.dart';
 
@@ -163,7 +164,7 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
                   child: Text('Generate Image'),
                 ),
                 ElevatedButton(
-                  onPressed: () => _saveImage(_generatedImage),
+                  onPressed: () => ImageUtils.saveImage(context,_generatedImage,"creations"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
                     foregroundColor: textColor,

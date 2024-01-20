@@ -187,7 +187,7 @@ class _MainScreenState extends State<MainScreen> {
     generateController = StreamController<List<String>>.broadcast();
 
     final user = await Store.getUser();
-    final editPath = '$user/edits';
+    final editPath = '$user/editions';
     final createPath = '$user/creations';
 
     generateController.add(await getAllImagesFromStorage(createPath));
