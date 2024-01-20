@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mobils/components/bottom-menu.dart';
 import 'package:mobils/components/custom-text-file.dart';
 import 'package:mobils/components/header.dart';
+import 'package:mobils/login.dart';
 
 import 'components/button.dart';
 import 'components/custom-text.dart';
@@ -85,6 +86,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       floatingActionButton: ElevatedButton.icon(
         onPressed: () {
           signOut();
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const LoginScreen(),
+            ),
+                (route) => false,
+          );
         },
         icon: const Icon(Icons.logout, color: textColor), // Icon on the left
         label: const CustomText(text: 'Logout', size: 18) , // Text on the right
