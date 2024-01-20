@@ -68,6 +68,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
                         color: primaryColor,
                         onPressed: () async {
                           pickMedia(ImageSource.camera);
+                          getAllImagesFromStorage();
+                          setState(() {});
                         },
                       ),
                       CustomIconButton(

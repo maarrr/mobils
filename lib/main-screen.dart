@@ -81,7 +81,7 @@ class _MainScreenState extends State<MainScreen> {
                         MaterialPageRoute(
                           builder: (context) => const SmartCreatorScreen(),
                         ),
-                      );
+                      ).then((value) => _onReturn());
                     },
                 ),
               ],
@@ -133,7 +133,7 @@ class _MainScreenState extends State<MainScreen> {
                             size: 18
                         ));
                   } else {
-                    return WrapList(images: imageUrls!, elementPerRow: 4);
+                    return WrapList(images: imageUrls!, elementPerRow: 4, onReturn: _onReturn);
                   }
                 } else {
                   return LoadingList(elementPerRow: 4, count: 8);
