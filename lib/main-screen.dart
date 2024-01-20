@@ -33,7 +33,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  late String _username;
+  late String _username = "";
 
   late StreamController<List<String>> editController;
   late StreamController<List<String>> generateController;
