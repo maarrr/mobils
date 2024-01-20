@@ -16,6 +16,8 @@ import 'package:mobils/components/wrap-list.dart';
 import 'package:path/path.dart';
 import 'package:image/image.dart' as img;
 
+import 'package:mobils/components/loading-list.dart';
+
 import 'package:dart_openai/dart_openai.dart';
 
 import 'components/custom-text.dart';
@@ -33,6 +35,7 @@ class GalleryScreen extends StatefulWidget {
 
 class _GalleryScreenState extends State<GalleryScreen> {
   String? imagePath;
+  bool _isLoading = false;
 
   // Declare a StreamController of List<String>
   late StreamController<List<String>> imageUrlsController;
@@ -69,9 +72,10 @@ class _GalleryScreenState extends State<GalleryScreen> {
                           icon: Icons.camera_alt,
                           color: primaryColor,
                           onPressed: () async {
-                            pickMedia(ImageSource.camera);
-                            getAllImagesFromStorage();
-                            setState(() {});
+                            await pickMedia(ImageSource.camera);
+                            setState(() {_isLoading = true;});
+                            await getAllImagesFromStorage();
+                            setState(() {_isLoading = false;});
                             },
                       ),
                       ButtonTextIcon(
@@ -80,7 +84,10 @@ class _GalleryScreenState extends State<GalleryScreen> {
                         icon: Icons.photo_library_outlined,
                         color: primaryVariant,
                         onPressed: () async {
-                          pickMedia(ImageSource.gallery);
+                          await pickMedia(ImageSource.gallery);
+                          setState(() {_isLoading = true;});
+                          await getAllImagesFromStorage();
+                          setState(() {_isLoading = false;});
                         },
                       ),
                     ],
@@ -90,7 +97,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                       StreamBuilder<List<String>>(
                         stream: imageUrlsStream, // a stream of image URLs
                         builder: (context, snapshot) {
-                            if (snapshot.hasData) {
+                            if (!_isLoading && snapshot.hasData) {
                             // the stream has data
                             final imageUrls = snapshot.data;
                             if(imageUrls!.isEmpty) {
@@ -105,9 +112,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                             }
                           } else {
                             // the stream has no data yet
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
+                              return LoadingList(elementPerRow: 3, count: 12);
                           }
                         },
                       )
@@ -125,7 +130,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
   }
 
 
-  void pickMedia(ImageSource source) async {
+  Future<void> pickMedia(ImageSource source) async {
     XFile? file;
     file = await ImagePicker().pickImage(source: source);
 
@@ -133,8 +138,6 @@ class _GalleryScreenState extends State<GalleryScreen> {
       imagePath = file.path;
       uploadFile();
     }
-
-    getAllImagesFromStorage();
   }
 
   Future uploadFile() async {

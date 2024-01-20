@@ -22,8 +22,8 @@ class LoadingList extends StatelessWidget {
   Widget build(BuildContext context) {
     return
       GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: elementPerRow,
           childAspectRatio: 1.0,
         ),
         itemCount: images.length,
@@ -41,10 +41,6 @@ class LoadingList extends StatelessWidget {
           );
         },
       );
-  }
-
-  // Default callback function (you can customize this based on your needs)
-  static void _defaultCallback() {
   }
 
 }
