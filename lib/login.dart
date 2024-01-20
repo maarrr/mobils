@@ -1,172 +1,151 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mobils/components/custom-text-file.dart';
+import 'package:mobils/components/custom-text.dart';
 import 'package:mobils/constants.dart';
-import 'package:mobils/gallery.dart';
 import 'package:mobils/sign-in.dart';
 import 'package:mobils/store.dart';
 
-import 'package:mobils/smart_editor.dart';
-import 'package:mobils/smart_creator.dart';
+
+import 'components/button.dart';
+import 'components/header.dart';
+import 'main-screen.dart';
 
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 
 class _LoginScreenState extends State<LoginScreen> {
-  late String email;
-  late String password;
-  bool isError = false;
-  late String msg = "ERRROR";
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  bool _isError = false;
+  late String _msg = "";
 
   final _auth = FirebaseAuth.instance;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
-      appBar: AppBar(
-        title: const Text(
-          'PixelGenius',
-          style: TextStyle(
-            color: textColor,
-            fontSize: 24,
-            fontFamily: 'Work Sans',
-          ),
-        ),
-        backgroundColor: backgroundColor,
-        centerTitle: true,
-
-      ),
+      appBar: const Header(),
       body:
       Padding(
-        padding: const EdgeInsets.all(32.0), // Adjust the value as needed
+        padding: const EdgeInsets.all(16.0),
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("Email", style: TextStyle(
-                    color: textColor,
-                    fontSize: 16,
-                    fontFamily: 'Work Sans',
-                  )),
-                  TextField(
-                      style: const TextStyle(color: textColor),
-                      keyboardType: TextInputType.emailAddress,
-                      textAlign: TextAlign.start,
-                      onChanged: (value) {
-                        email = value;
-                      },
-                      decoration: decoration
-                  ),
-                  const SizedBox(height: 16),
-                  const Text("Password", style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontFamily: 'Work Sans',
-                  )),
-                  TextField(
-                      style: const TextStyle(color: textColor),
-                      obscureText: true,
-                      textAlign: TextAlign.start,
-                      onChanged: (value) {
-                        password = value;
-                        },
-                      decoration: decoration
-                  ),
-                  const SizedBox(height: 16),
-                  if(isError)
-                    Column(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const CustomText(text: "Email", size: 16),
+                    CustomTextFile(controller: _emailController, isPassword: false),
+                    const SizedBox(height: 16),
+                    const CustomText(text: "Password", size: 16),
+                    CustomTextFile(controller: _passwordController, isPassword: true),
+                    const SizedBox(height: 16),
+                    if(_isError)
+                      Column(
+                        children: [
+                          Text(
+                            _msg,
+                            style: const TextStyle(
+                              color: errorColor,
+                              fontSize: 14,
+                              fontFamily: fontFamily,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          msg,
-                          style: const TextStyle(
-                            color: Colors.red,
-                            fontSize: 18,
-                            fontFamily: 'Work Sans',
+                        const CustomText(text: "Don't have an account?", size: 18),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (context) => SignInScreen(),
+                                ),
+                            );
+                          },
+                          child: const Text(
+                            'Sign In',
+                            style: TextStyle(
+                              color: secondaryColor,
+                              fontSize: 18,
+                              fontFamily: fontFamily,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 16),
                       ],
                     ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Don't have an account?",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontFamily: 'Work Sans',
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(
-                              builder: (context) => SignInScreen(),
-                              ),
-                          );
-                        },
-                        child: const Text(
-                          'Sign In',
-                          style: TextStyle(
-                            color: secondaryColor,
-                            fontSize: 18,
-                            fontFamily: 'Work Sans',
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Align(
-                    alignment: Alignment.center,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: primaryColor,
-                        shadowColor: secondaryColor,
-                        elevation: 3,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(32.0)),
-                        minimumSize: const Size(240, 60), //////// HERE
-                      ),
-                      onPressed: () async {
-                        try {
-                          final user = await _auth.signInWithEmailAndPassword(
-                              email: email, password: password);
-                          if (user != null) {
-                            Store.saveUser(user.user!.uid);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SmartCreatorScreen(),
-                              ),
-                            );
+                    const SizedBox(height: 16),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Button(
+                        textText: 'Login',
+                        sizeText: 24,
+                        onPressed: () async {
+                          setState(() {
+                            _isError = false;
+                          });
+                          if (_formKey.currentState!.validate()) {
+                            await _login(context);
                           }
-                        } catch (e) {
-                          isError = true;
-                          msg = "Error. Try again.";
-                        }
-                      },
-                      child: const Text(
-                        'Login',
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: 24,
-                          fontFamily: 'Work Sans',
-                        ),
+                        },
                       ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+          )
         ),
       )
     );
+  }
+
+  _login(BuildContext context) async {
+    final email = _emailController.text;
+    final password = _passwordController.text;
+
+    try {
+      final user = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      if (user != null) {
+        Store.saveUser(user.user!.uid);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const MainScreen(),
+          ),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        _isError = true;
+        if(e.code == 'email-already-in-use'){
+          _msg = "Email already in use.";
+
+        }else {
+          _msg = "Error in procedure. Try again";
+        }
+      });
+    }
   }
 }

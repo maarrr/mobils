@@ -10,7 +10,7 @@ import 'package:mobils/constants.dart';
 import 'package:mobils/store.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-import 'bottom-menu.dart';
+import 'components/bottom-menu.dart';
 
 class SmartEditorScreen extends StatefulWidget {
   const SmartEditorScreen({Key? key}) : super(key: key);

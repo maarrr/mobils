@@ -5,7 +5,7 @@ import 'dart:typed_data';
 
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
-import 'package:mobils/custom-text.dart';
+import 'package:mobils/components/custom-text.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
