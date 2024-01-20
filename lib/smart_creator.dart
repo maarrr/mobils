@@ -5,6 +5,7 @@ import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:mobils/components/header.dart';
 import 'package:mobils/constants.dart';
 import 'package:mobils/utils.dart';
 
@@ -52,11 +53,7 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
-      appBar: AppBar(
-        title: Text('Image Generator', style: TextStyle(color: textColor)),
-        backgroundColor: primaryColor,
-        centerTitle: true,
-      ),
+      appBar: const Header(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
