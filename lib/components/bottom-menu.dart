@@ -68,7 +68,7 @@ class BottomMenu extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ProfileScreen(),
+                    builder: (context) => const ProfileScreen(),
                   ),
                 );
               },

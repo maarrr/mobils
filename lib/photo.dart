@@ -5,10 +5,12 @@ import 'dart:typed_data';
 
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
+import 'package:mobils/components/button.dart';
 import 'package:mobils/components/custom-text.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
+import 'components/button-text-icon.dart';
 import 'constants.dart';
 import 'package:http/http.dart' as http;
 
@@ -45,16 +47,11 @@ class _PhotoScreenState extends State<PhotoScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                onPressed: _generateVariations,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  foregroundColor: textColor,
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(6.0),
-                  child: CustomText(text: "Generate image", size: 24)
-                )
+              Button(
+                  textText: "Edit photo by IA",
+                  sizeText: 24,
+                  onPressed: _generateVariations,
+                  color: primaryColor
               ),
               const SizedBox(height: 30),
               _isLoading ?
@@ -86,29 +83,19 @@ class _PhotoScreenState extends State<PhotoScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  ElevatedButton(
-                      onPressed: _save,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: primaryColor,
-                        foregroundColor: textColor,
-                      ),
-                      child: const Padding(
-                          padding: EdgeInsets.all(6.0),
-                          child: CustomText(text: "Save image", size: 18)
-                      )// Adjust the spacing as needed
-
+                  ButtonTextIcon(
+                    text: "Save",
+                    size: 18,
+                    color: primaryColor,
+                    icon: Icons.save_alt,
+                    onPressed: _save,
                   ),
-                  ElevatedButton(
-                      onPressed: _undo,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: primaryColor,
-                        foregroundColor: textColor,
-                      ),
-                      child: const Padding(
-                          padding: EdgeInsets.all(6.0),
-                          child: CustomText(text: "Undo image", size: 18),
-                      )// Adjust the spacing as needed
-
+                  ButtonTextIcon(
+                    text: "Undo",
+                    size: 18,
+                    color: primaryVariant,
+                    icon: Icons.undo,
+                    onPressed: _undo,
                   ),
               ]
               ) : const SizedBox(height: 30),

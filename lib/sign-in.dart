@@ -111,6 +111,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       child: Button(
                         textText: 'Sign In',
                         sizeText: 24,
+                        color: primaryColor,
                         onPressed: () async {
                           setState(() {
                             _isError = false;
