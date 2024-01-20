@@ -30,16 +30,14 @@ class LoadingList extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
         return Card(
           color: surfaceColor,
-            child: Padding(
-              padding: const EdgeInsets.all(4.0), // adjust as needed
-              child: AspectRatio(
+            child: AspectRatio(
                 aspectRatio: 1,
                 child: ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(4.0)),
                   child: images[index],
                 ),
               ),
-            ),
+
           );
         },
       );

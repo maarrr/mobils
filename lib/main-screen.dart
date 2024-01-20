@@ -86,6 +86,7 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ],
             ),
+          const SizedBox(height: 8),
           Expanded(
             child:
             StreamBuilder<List<String>>(
@@ -105,11 +106,12 @@ class _MainScreenState extends State<MainScreen> {
                     return WrapList(images: imageUrls!, elementPerRow: 4, onReturn: _onReturn);
                   }
                 } else {
-                  return LoadingList(elementPerRow: 4, count: 8);
+                  return LoadingList(elementPerRow: 4, count: 12);
                 }
               },
             ),
           ),
+            const SizedBox(height: 16),
             const Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment:  MainAxisAlignment.spaceBetween,
@@ -117,6 +119,7 @@ class _MainScreenState extends State<MainScreen> {
                 CustomText(text: "Edited images", size: 24),
               ],
             ),
+            const SizedBox(height: 4),
           Expanded(
             child:
             StreamBuilder<List<String>>(
@@ -136,7 +139,7 @@ class _MainScreenState extends State<MainScreen> {
                     return WrapList(images: imageUrls!, elementPerRow: 4, onReturn: _onReturn);
                   }
                 } else {
-                  return LoadingList(elementPerRow: 4, count: 8);
+                  return LoadingList(elementPerRow: 4, count: 12);
                 }
               },
             )

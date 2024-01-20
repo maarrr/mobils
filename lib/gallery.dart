@@ -85,7 +85,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                       ),
                     ],
                   ),
-
+                   SizedBox(height: 16),
                    Expanded(child:
                       StreamBuilder<List<String>>(
                         stream: imageUrlsStream, // a stream of image URLs

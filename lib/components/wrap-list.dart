@@ -13,9 +13,9 @@ class WrapList extends StatelessWidget {
   Widget build(BuildContext context) {
       return
           GridView.builder(
-               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                 crossAxisCount: 4,
-                 childAspectRatio: 1.0,
+               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                 crossAxisCount: elementPerRow,
+                 childAspectRatio: 2.0 / 2.0,
                ),
                itemCount: images.length,
                itemBuilder: (BuildContext context, int index) {
@@ -32,9 +32,7 @@ class WrapList extends StatelessWidget {
                          ),
                        ).then((value) => onReturn());
                      },
-                     child: Padding(
-                       padding: const EdgeInsets.all(4.0), // adjust as needed
-                       child: AspectRatio(
+                     child: AspectRatio(
                          aspectRatio: 1,
                          child: ClipRRect(
                            borderRadius: const BorderRadius.all(Radius.circular(4.0)),
@@ -44,7 +42,6 @@ class WrapList extends StatelessWidget {
                            ),
                          ),
                        ),
-                     ),
                    ),
                  );
                },
