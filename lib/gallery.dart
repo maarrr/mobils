@@ -7,7 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:mobils/components/bottom-menu.dart';
+import 'package:mobils/components/button-text-icon.dart';
 import 'package:mobils/components/custom-icon-button.dart';
 import 'package:mobils/components/header.dart';
 import 'package:mobils/photo.dart';
@@ -19,6 +19,7 @@ import 'package:image/image.dart' as img;
 import 'package:dart_openai/dart_openai.dart';
 
 import 'components/custom-text.dart';
+import 'components/menu.dart';
 import 'constants.dart';
 
 
@@ -62,20 +63,22 @@ class _GalleryScreenState extends State<GalleryScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      CustomIconButton(
-                        icon: Icons.camera_alt,
-                        size: 24,
-                        color: primaryColor,
-                        onPressed: () async {
-                          pickMedia(ImageSource.camera);
-                          getAllImagesFromStorage();
-                          setState(() {});
-                        },
+                      ButtonTextIcon(
+                          text: "Camera",
+                          size: 24,
+                          icon: Icons.camera_alt,
+                          color: primaryColor,
+                          onPressed: () async {
+                            pickMedia(ImageSource.camera);
+                            getAllImagesFromStorage();
+                            setState(() {});
+                            },
                       ),
-                      CustomIconButton(
-                        icon: Icons.photo_library_outlined,
+                      ButtonTextIcon(
+                        text: "Gallery",
                         size: 24,
-                        color: primaryColor,
+                        icon: Icons.photo_library_outlined,
+                        color: primaryVariant,
                         onPressed: () async {
                           pickMedia(ImageSource.gallery);
                         },
@@ -112,7 +115,12 @@ class _GalleryScreenState extends State<GalleryScreen> {
                 ],
               ),
             ),
-        bottomNavigationBar: const BottomMenu(),
+      bottomNavigationBar: Menu(
+        currentIndex: 2,
+        onTap: (index) {
+          Menu.navigateToScreen(context, index);
+        },
+      ),
     );
   }
 

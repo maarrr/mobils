@@ -8,10 +8,10 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:mobils/components/bottom-menu.dart';
 import 'package:mobils/components/custom-icon-button.dart';
 import 'package:mobils/components/custom-text.dart';
 import 'package:mobils/components/header.dart';
+import 'package:mobils/components/menu.dart';
 import 'package:mobils/photo.dart';
 import 'package:mobils/smart_creator.dart';
 import 'package:mobils/store.dart';
@@ -37,7 +37,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  late String _username = "";
+  late String _username = 'No name';
 
   late StreamController<List<String>> editController;
   late StreamController<List<String>> generateController;
@@ -74,7 +74,7 @@ class _MainScreenState extends State<MainScreen> {
                 CustomIconButton(
                     icon: Icons.add,
                     size: 24,
-                    color: primaryColor,
+                    color: primaryVariant,
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -144,7 +144,12 @@ class _MainScreenState extends State<MainScreen> {
           ],
         )
       ),
-      bottomNavigationBar: BottomMenu(),
+      bottomNavigationBar: Menu(
+        currentIndex: 0,
+        onTap: (index) {
+          Menu.navigateToScreen(context, index);
+        },
+      ),
     );
   }
 
@@ -202,7 +207,7 @@ class _MainScreenState extends State<MainScreen> {
     User? user = FirebaseAuth.instance.currentUser;
     if(user != null){
       setState(() {
-        _username = user.displayName!;
+        _username = user.displayName ?? 'no name';
       });
     }
   }

@@ -10,7 +10,6 @@ import 'package:mobils/constants.dart';
 import 'package:mobils/store.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-import 'components/bottom-menu.dart';
 
 class SmartEditorScreen extends StatefulWidget {
   const SmartEditorScreen({Key? key}) : super(key: key);
@@ -169,7 +168,7 @@ class _SmartEditorScreenState extends State<SmartEditorScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: const BottomMenu(),
+
     );
   }
 }

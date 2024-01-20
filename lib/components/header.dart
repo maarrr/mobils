@@ -8,7 +8,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget{
   const Header({Key? key}) : super(key: key);
 
   @override
-  Size get preferredSize => const Size.fromHeight(60);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,4 @@ class Header extends StatelessWidget implements PreferredSizeWidget{
       automaticallyImplyLeading: false,
     );
   }
-
-
-
 }

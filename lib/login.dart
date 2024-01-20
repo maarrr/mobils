@@ -102,6 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Button(
                         textText: 'Login',
                         sizeText: 24,
+                        color: primaryColor,
                         onPressed: () async {
                           setState(() {
                             _isError = false;

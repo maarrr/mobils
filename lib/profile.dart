@@ -2,16 +2,20 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobils/components/bottom-menu.dart';
+import 'package:mobils/components/button-text-icon.dart';
 import 'package:mobils/components/custom-text-file.dart';
 import 'package:mobils/components/header.dart';
 import 'package:mobils/login.dart';
 
 import 'components/button.dart';
 import 'components/custom-text.dart';
+import 'components/menu.dart';
 import 'constants.dart';
 
 class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({Key? key}) : super(key: key);
+
+
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
@@ -59,53 +63,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: const Header(),
-      body: Center(
+      body: SafeArea(
         child: SingleChildScrollView(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const CustomText(text: "Username", size: 18),
-                CustomTextFile(controller: _displayNameController, isPassword: false),
-                const SizedBox(height: 16),
-                const CustomText(text: "Email", size: 18),
-                CustomTextFile(controller: _emailController, isPassword: false),
-                const SizedBox(height: 16),
-                const CustomText(text: "Password", size: 18),
-                CustomTextFile(controller: _passwordController, isPassword: true),
-                const SizedBox(height: 24),
-                Align(
-                  alignment: Alignment.center,
-                  child: Button(textText: 'Update profile', sizeText: 24, onPressed: _update),
-                )
-              ],
-            ),
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Align(
+                alignment: Alignment.topRight,
+                child: ButtonTextIcon(
+                    text: "Logout",
+                    size: 18,
+                    color: primaryVariant,
+                    icon: Icons.logout,
+                    onPressed: signOut,
+                  ),
+              ),
+              const SizedBox(height: 48),
+              const CustomText(text: "Username", size: 18),
+              CustomTextFile(controller: _displayNameController, isPassword: false),
+              const SizedBox(height: 16),
+              const CustomText(text: "Email", size: 18),
+              CustomTextFile(controller: _emailController, isPassword: false),
+              const SizedBox(height: 16),
+              const CustomText(text: "Password", size: 18),
+              CustomTextFile(controller: _passwordController, isPassword: true),
+              const SizedBox(height: 24),
+              Align(
+                alignment: Alignment.center,
+                child:
+                  Button(
+                      textText: 'Update profile',
+                      sizeText: 24,
+                      color: primaryColor,
+                      onPressed: _update
+                  ),
+              )
+            ],
+          ),
         ),
+
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: ElevatedButton.icon(
-        onPressed: () {
-          signOut();
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const LoginScreen(),
-            ),
-                (route) => false,
-          );
+
+      bottomNavigationBar: Menu(
+        currentIndex: 3,
+        onTap: (index) {
+          Menu.navigateToScreen(context, index);
         },
-        icon: const Icon(Icons.logout, color: textColor), // Icon on the left
-        label: const CustomText(text: 'Logout', size: 18) , // Text on the right
-        style: ElevatedButton.styleFrom(
-          backgroundColor: primaryColor,
-          shadowColor: primaryVariant,
-          elevation: 3,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.0)),
-          padding: const EdgeInsets.all(16),
-        ),
       ),
-      bottomNavigationBar: BottomMenu()
     );
 
   }
@@ -141,6 +147,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (e) {
       print('Error signing out: $e');
     }
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LoginScreen(),
+      ),
+          (route) => false,
+    );
   }
 
 }
