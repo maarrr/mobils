@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobils/constants.dart';
+import 'package:mobils/first-screen.dart';
 import 'package:mobils/login.dart';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -42,7 +43,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: LoginScreen(),
+      home: FirstScreen(),
     );
   }
 }
