@@ -1,29 +1,18 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:mobils/components/custom-icon-button.dart';
 import 'package:mobils/components/custom-text.dart';
 import 'package:mobils/components/header.dart';
 import 'package:mobils/components/menu.dart';
-import 'package:mobils/photo.dart';
 import 'package:mobils/smart_creator.dart';
-import 'package:mobils/store.dart';
 import 'package:mobils/components/wrap-list.dart';
-import 'package:path/path.dart';
-import 'package:image/image.dart' as img;
+import 'package:mobils/utils.dart';
 
-import 'package:dart_openai/dart_openai.dart';
 
 // spinkit
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'components/loading-list.dart';
 import 'constants.dart';
 
 
@@ -50,17 +39,19 @@ class _MainScreenState extends State<MainScreen> {
   @override
   initState() {
     super.initState();
-    getName();
-    start();
+    _getName();
+    _start();
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: const Header(),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
+      body:
+      Padding(
+        padding: const EdgeInsets.all(margin),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -106,7 +97,12 @@ class _MainScreenState extends State<MainScreen> {
                     return WrapList(images: imageUrls!, elementPerRow: 4, onReturn: _onReturn);
                   }
                 } else {
-                  return LoadingList(elementPerRow: 4, count: 12);
+                  return const Center(
+                    child: SpinKitCircle(
+                      color: primaryColor,
+                      size: 100.0,
+                    ),
+                  );
                 }
               },
             ),
@@ -120,30 +116,35 @@ class _MainScreenState extends State<MainScreen> {
               ],
             ),
             const SizedBox(height: 4),
-          Expanded(
-            child:
-            StreamBuilder<List<String>>(
-              stream: imageEditStream, // a stream of image URLs
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  // the stream has data
-                  final imageUrls = snapshot.data;
-                  if(imageUrls!.isEmpty) {
-                    return const Padding(
-                        padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                        child: CustomText(
-                            text: "No edited images yet.",
-                            size: 18
-                        ));
+            Expanded(
+              child:
+              StreamBuilder<List<String>>(
+                stream: imageEditStream, // a stream of image URLs
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final imageUrls = snapshot.data;
+                    if(imageUrls!.isEmpty) {
+                      return const Padding(
+                          padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+                          child: CustomText(
+                              text: "No edited images yet.",
+                              size: 18
+                          )
+                      );
+                    } else {
+                      return WrapList(images: imageUrls!, elementPerRow: 4, onReturn: _onReturn);
+                    }
                   } else {
-                    return WrapList(images: imageUrls!, elementPerRow: 4, onReturn: _onReturn);
+                    return const Center(
+                      child: SpinKitCircle(
+                        color: primaryColor,
+                        size: 100.0,
+                      ),
+                    );
                   }
-                } else {
-                  return LoadingList(elementPerRow: 4, count: 12);
-                }
-              },
+                },
+              )
             )
-          )
           ],
         )
       ),
@@ -157,56 +158,21 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _onReturn() {
-    start();
+    _start();
     setState(() {});
   }
 
-  Future<List<String>> getAllImagesFromStorage(String folder) async {
-
-    try {
-      // Reference to the folder in Firebase Storage
-      Reference storageFolder = FirebaseStorage.instance.ref().child(folder!);
-
-      // Retrieve a list of items (files and subdirectories) within the folder
-      ListResult result = await storageFolder.listAll();
-
-      List<String> imageUrls = [];
-
-      // Filter and add only image URLs to the list
-      for (var item in result.items) {
-        String imageUrl = await item.getDownloadURL();
-        print(imageUrl);
-        imageUrls.add(imageUrl);
 
 
-      }
-
-      return imageUrls;
-
-    } catch (e) {
-      // Handle errors, if any
-      print('Error getting images from Firebase Storage: $e');
-    }
-
-    return [];
-
-
-  }
-
-  Future<void> start() async {
+  Future<void> _start() async {
     editController = StreamController<List<String>>.broadcast();
     generateController = StreamController<List<String>>.broadcast();
 
-    final user = await Store.getUser();
-    final editPath = '$user/edits';
-    final createPath = '$user/creations';
-
-    generateController.add(await getAllImagesFromStorage(createPath));
-
-    editController.add(await getAllImagesFromStorage(editPath));
+    generateController.add(await ImageUtils.getAllImagesFromStorage("creations"));
+    editController.add(await ImageUtils.getAllImagesFromStorage("edits"));
   }
 
-  getName() async {
+  Future<void> _getName() async {
     User? user = FirebaseAuth.instance.currentUser;
     if(user != null){
       setState(() {

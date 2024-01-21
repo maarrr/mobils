@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:flutter/material.dart';
 
@@ -57,5 +58,33 @@ class ImageUtils {
         );
       },
     );
+  }
+
+  static Future<List<String>> getAllImagesFromStorage(String folder) async {
+
+    User? user = _auth.currentUser;
+    if(user == null) return [];
+
+    final uid = user.uid;
+    final path = '$uid/$folder';
+
+    try {
+      Reference storageFolder = FirebaseStorage.instance.ref().child(path);
+
+      ListResult result = await storageFolder.listAll();
+
+      List<String> imageUrls = [];
+
+      for (var item in result.items) {
+        String imageUrl = await item.getDownloadURL();
+        imageUrls.add(imageUrl);
+      }
+
+      return imageUrls;
+
+    } catch (e) {
+      //error
+    }
+    return [];
   }
 }

@@ -1,11 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobils/components/header.dart';
 import 'package:mobils/constants.dart';
 import 'package:mobils/gallery.dart';
 import 'package:mobils/login.dart';
-import 'package:mobils/store.dart';
 
 import 'components/button.dart';
 import 'components/custom-text-file.dart';
@@ -13,6 +11,8 @@ import 'components/custom-text.dart';
 
 
 class SignInScreen extends StatefulWidget {
+  const SignInScreen({super.key});
+
   @override
   _SignInScreenState createState() => _SignInScreenState();
 }
@@ -30,7 +30,6 @@ class _SignInScreenState extends State<SignInScreen> {
   late String _msg;
 
   final _auth = FirebaseAuth.instance;
-  final _firestore = FirebaseFirestore.instance;
 
   @override
   void dispose() {
@@ -49,7 +48,7 @@ class _SignInScreenState extends State<SignInScreen> {
         body: Center (
           child: SingleChildScrollView(
               child: SingleChildScrollView(
-                padding: EdgeInsets.all(16),
+                padding: EdgeInsets.all(margin),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -150,15 +149,7 @@ class _SignInScreenState extends State<SignInScreen> {
            email: email, password: password);
        if(userCredentials != null) {
 
-         String userId = userCredentials.user!.uid;
-         Store.saveUser(userId);
-
          userCredentials.user?.updateDisplayName(name);
-
-         /*await _firestore.collection('users').doc(userId).set({
-           'username': name,
-           'email': email,
-         });*/
 
          Navigator.push(context, MaterialPageRoute(
            builder: (context) => const GalleryScreen(),

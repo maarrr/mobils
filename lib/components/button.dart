@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../constants.dart';
 import 'custom-text.dart';
 
 class Button extends StatelessWidget {
@@ -13,15 +12,13 @@ class Button extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         elevation: 3,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16.0)),
-        padding: const EdgeInsets.all(16),
-        minimumSize: const Size(240, 60),
+        padding: const EdgeInsets.fromLTRB(32, 16, 32, 16),
       ),
       onPressed: onPressed,
       child: CustomText(text: textText, size: sizeText),
