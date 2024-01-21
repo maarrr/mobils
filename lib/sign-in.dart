@@ -163,7 +163,7 @@ class _SignInScreenState extends State<SignInScreen> {
            _msg = "Email already in use.";
 
          }else {
-           _msg = "Error in procedure. Try again";
+           _msg = "Incorrect data. Try again";
          }
        });
      }
