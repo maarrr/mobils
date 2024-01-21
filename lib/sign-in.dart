@@ -144,7 +144,7 @@ class _SignInScreenState extends State<SignInScreen> {
        return;
      }
 
-     try {
+     try { //Sign in in firebase Auth
        final userCredentials = await _auth.createUserWithEmailAndPassword(
            email: email, password: password);
        if(userCredentials != null) {

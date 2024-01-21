@@ -124,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    try {
+    try { //Login in firebase Auth
       final user = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       if (user != null) {

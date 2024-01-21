@@ -142,7 +142,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           await user.updatePassword(_passwordController.text);
         }
 
-        await user.reload();
+        await user.reload(); // Upload user
         _isError = false;
       }
     } catch (e) {

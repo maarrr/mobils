@@ -59,7 +59,7 @@ class ImageUtils {
       },
     );
   }
-
+  // Function to get all the images from a specified file (gallery, edits, creations)
   static Future<List<String>> getAllImagesFromStorage(String folder) async {
 
     User? user = _auth.currentUser;
@@ -69,6 +69,7 @@ class ImageUtils {
     final path = '$uid/$folder';
 
     try {
+      //Ask all images to firebase storage
       Reference storageFolder = FirebaseStorage.instance.ref().child(path);
 
       ListResult result = await storageFolder.listAll();
