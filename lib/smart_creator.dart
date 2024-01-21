@@ -49,79 +49,80 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
   }
 
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: const Header(),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _isLoading
-                ? SpinKitSpinningLines(
-              color: primaryColor,
-              size: 160.0,
-              duration: const Duration(seconds: 2),
-            )
-                : _generatedImage.isNotEmpty
-                ? Image.memory(
-              base64.decode(_generatedImage),
-              height: 250,
-              width: 250,
-              fit: BoxFit.cover,
-            )
-                : Container(
-              width: 250,
-              height: 250,
-              margin: EdgeInsets.only(bottom: 30),
-              color: backgroundColor,
-              child: SpinKitCubeGrid(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _isLoading
+                  ? SpinKitSpinningLines(
                 color: primaryColor,
                 size: 160.0,
                 duration: const Duration(seconds: 2),
               )
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: _descriptionController,
-              maxLines: 4,
-              style: TextStyle(color: textColor),
-              decoration: InputDecoration(
-                labelText: "Input your image description...",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white, width: 1.0),
-                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                  : _generatedImage.isNotEmpty
+                  ? Image.memory(
+                base64.decode(_generatedImage),
+                height: 250,
+                width: 250,
+                fit: BoxFit.cover,
+              )
+                  : Container(
+                width: 250,
+                height: 250,
+                margin: EdgeInsets.only(bottom: 30),
+                color: backgroundColor,
+                child: SpinKitCubeGrid(
+                  color: primaryColor,
+                  size: 160.0,
+                  duration: const Duration(seconds: 2),
                 ),
               ),
-            ),
-            SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                  onPressed: _generateImage,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor,
-                    foregroundColor: textColor,
+              SizedBox(height: 16),
+              TextField(
+                controller: _descriptionController,
+                maxLines: 4,
+                style: TextStyle(color: textColor),
+                decoration: InputDecoration(
+                  labelText: "Input your image description...",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
                   ),
-                  child: Text('Generate Image'),
-                ),
-                ElevatedButton(
-                  onPressed: () => ImageUtils.saveImage(context,_generatedImage,"creations"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor,
-                    foregroundColor: textColor,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white, width: 1.0),
+                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
                   ),
-                  child: Text('Save Image'),
                 ),
-              ],
-            ),
-          ],
+              ),
+              SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton(
+                    onPressed: _generateImage,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      foregroundColor: textColor,
+                    ),
+                    child: Text('Generate Image'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => ImageUtils.saveImage(context, _generatedImage, "creations"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      foregroundColor: textColor,
+                    ),
+                    child: Text('Save Image'),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: Menu(
