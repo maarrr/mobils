@@ -1,14 +1,11 @@
-
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:mobils/components/button.dart';
 import 'package:mobils/components/custom-text.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 import 'components/button-text-icon.dart';
 import 'constants.dart';
@@ -45,7 +42,7 @@ class _PhotoScreenState extends State<PhotoScreen> {
           )
         ),
         body:Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(margin),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -57,12 +54,12 @@ class _PhotoScreenState extends State<PhotoScreen> {
               ),
               const SizedBox(height: 30),
               _isLoading ?
-                AspectRatio (
+                const AspectRatio (
                   aspectRatio: 1.0 / 1.0,
                   child: SpinKitSpinningLines(
                     color: primaryColor,
                     size: 160.0,
-                    duration: const Duration(seconds: 2),
+                    duration: Duration(seconds: 2),
                   ),
                 )
                   : _generatedImage.isNotEmpty ?
@@ -79,7 +76,6 @@ class _PhotoScreenState extends State<PhotoScreen> {
                       fit: BoxFit.cover,
                     ),
                   ),
-
               const SizedBox(height: 30),
               _generatedImage.isNotEmpty ?
               Row(

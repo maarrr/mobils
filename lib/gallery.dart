@@ -3,22 +3,16 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:mobils/components/button-text-icon.dart';
-import 'package:mobils/components/custom-icon-button.dart';
 import 'package:mobils/components/header.dart';
-import 'package:mobils/photo.dart';
-import 'package:mobils/store.dart';
 import 'package:mobils/components/wrap-list.dart';
+import 'package:mobils/utils.dart';
 import 'package:path/path.dart';
 import 'package:image/image.dart' as img;
-
-import 'package:mobils/components/loading-list.dart';
-
-import 'package:dart_openai/dart_openai.dart';
 
 import 'components/custom-text.dart';
 import 'components/menu.dart';
@@ -37,28 +31,25 @@ class _GalleryScreenState extends State<GalleryScreen> {
   String? imagePath;
   bool _isLoading = false;
 
-  // Declare a StreamController of List<String>
   late StreamController<List<String>> imageUrlsController;
 
-// Declare a getter for the stream of image URLs
   Stream<List<String>> get imageUrlsStream => imageUrlsController.stream;
-
 
   @override
   void initState() {
     super.initState();
-    imageUrlsController = StreamController<List<String>>.broadcast();
-    getAllImagesFromStorage();
 
+    imageUrlsController = StreamController<List<String>>.broadcast();
+    _getImagesGallery();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: backgroundColor,
-        appBar: Header(),
+        appBar: const Header(),
         body:Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(margin),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -72,9 +63,9 @@ class _GalleryScreenState extends State<GalleryScreen> {
                           icon: Icons.camera_alt,
                           color: primaryColor,
                           onPressed: () async {
-                            await pickMedia(ImageSource.camera);
+                            await _pickMedia(ImageSource.camera);
                             setState(() {_isLoading = true;});
-                            await getAllImagesFromStorage();
+                            await _getImagesGallery();
                             setState(() {_isLoading = false;});
                             },
                       ),
@@ -84,21 +75,20 @@ class _GalleryScreenState extends State<GalleryScreen> {
                         icon: Icons.photo_library_outlined,
                         color: primaryVariant,
                         onPressed: () async {
-                          await pickMedia(ImageSource.gallery);
+                          await _pickMedia(ImageSource.gallery);
                           setState(() {_isLoading = true;});
-                          await getAllImagesFromStorage();
+                          await _getImagesGallery();
                           setState(() {_isLoading = false;});
                         },
                       ),
                     ],
                   ),
-                   SizedBox(height: 16),
+                   const SizedBox(height: 16),
                    Expanded(child:
                       StreamBuilder<List<String>>(
-                        stream: imageUrlsStream, // a stream of image URLs
+                        stream: imageUrlsStream,
                         builder: (context, snapshot) {
                             if (!_isLoading && snapshot.hasData) {
-                            // the stream has data
                             final imageUrls = snapshot.data;
                             if(imageUrls!.isEmpty) {
                               return const Padding(
@@ -111,8 +101,12 @@ class _GalleryScreenState extends State<GalleryScreen> {
                               return WrapList(images: imageUrls, elementPerRow: 3);
                             }
                           } else {
-                            // the stream has no data yet
-                              return LoadingList(elementPerRow: 3, count: 12);
+                              return const Center(
+                                child: SpinKitCircle(
+                                  color: primaryColor,
+                                  size: 100.0,
+                                ),
+                              );
                           }
                         },
                       )
@@ -130,17 +124,17 @@ class _GalleryScreenState extends State<GalleryScreen> {
   }
 
 
-  Future<void> pickMedia(ImageSource source) async {
+  Future<void> _pickMedia(ImageSource source) async {
     XFile? file;
     file = await ImagePicker().pickImage(source: source);
 
     if (file != null) {
       imagePath = file.path;
-      await uploadFile();
+      await _uploadFile();
     }
   }
 
-  Future<void> uploadFile() async {
+  Future<void> _uploadFile() async {
     if (imagePath == null) return;
     File fileToUpload = File(imagePath as String);
     final fileName = basename(fileToUpload.path);
@@ -153,8 +147,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
     final destination = '${user.uid}/$fileName';
 
-    // Replace 'your_image_file_path.jpg' with the actual path to your image file
-    Uint8List squaredImageBytes = await cropImageToSquare(fileToUpload);
+    Uint8List squaredImageBytes = await _cropImageToSquare(fileToUpload);
 
     try {
       final ref = firebase_storage.FirebaseStorage.instance
@@ -167,7 +160,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
   }
 
-  Future<Uint8List> cropImageToSquare(File imageFile) async {
+  Future<Uint8List> _cropImageToSquare(File imageFile) async {
     // Read the image from file
     img.Image? originalImage = img.decodeImage(imageFile.readAsBytesSync());
 
@@ -196,41 +189,10 @@ class _GalleryScreenState extends State<GalleryScreen> {
     return croppedBytes;
   }
 
+  _getImagesGallery() async {
+    imageUrlsController.add(await ImageUtils.getAllImagesFromStorage("gallery"));
 
-  getAllImagesFromStorage() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if(user == null) {
-      print("Error");
-      return;
-    }
-      final folder = await user.uid;
-
-      try {
-        // Reference to the folder in Firebase Storage
-        Reference storageFolder = FirebaseStorage.instance.ref().child(folder!);
-
-        // Retrieve a list of items (files and subdirectories) within the folder
-        ListResult result = await storageFolder.listAll();
-
-        List<String> imageUrls = [];
-
-        // Filter and add only image URLs to the list
-        for (var item in result.items) {
-          String imageUrl = await item.getDownloadURL();
-          print(imageUrl);
-          imageUrls.add(imageUrl);
-
-
-        }
-
-        // Add the list of image URLs to the stream
-        imageUrlsController.add(imageUrls);
-
-      } catch (e) {
-        // Handle errors, if any
-        print('Error getting images from Firebase Storage: $e');
-      }
-    }
+  }
 
 
 }

@@ -1,11 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:mobils/components/button.dart';
-import 'package:mobils/components/custom-text.dart';
 import 'package:mobils/login.dart';
 import 'package:mobils/sign-in.dart';
 
-import 'components/header.dart';
 import 'constants.dart';
 
 class FirstScreen extends StatefulWidget {
@@ -23,7 +20,7 @@ class _FirstScreenState extends State<FirstScreen> {
       backgroundColor: backgroundColor,
 
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(margin),
       child:Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -58,7 +55,7 @@ class _FirstScreenState extends State<FirstScreen> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => LoginScreen()),
+                          MaterialPageRoute(builder: (context) => const LoginScreen()),
                         );
                       },
                     ),

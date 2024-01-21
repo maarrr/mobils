@@ -1,5 +1,3 @@
-
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobils/components/button-text-icon.dart';
@@ -32,22 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    fetchUserData();
-  }
-
-  fetchUserData() async {
-    try {
-      User? user = _auth.currentUser;
-
-      if (user != null) {
-        setState(() {
-          _displayNameController.text = user.displayName ?? '';
-          _emailController.text = user.email ?? '';
-        });
-      }
-    } catch (e) {
-      print('Error fetching user data: $e');
-    }
+    _fetchUserData();
   }
 
   @override
@@ -125,6 +108,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
 
+  }
+
+  _fetchUserData() async {
+    try {
+      User? user = _auth.currentUser;
+
+      if (user != null) {
+        setState(() {
+          _displayNameController.text = user.displayName ?? '';
+          _emailController.text = user.email ?? '';
+        });
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
   }
 
   Future<void> _update() async {

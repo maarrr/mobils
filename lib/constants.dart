@@ -1,6 +1,4 @@
-
 import 'package:flutter/material.dart';
-
 
 
 const primaryColor = Color(0xFF6200EE);
@@ -12,6 +10,8 @@ const textColor = Color(0xFFE0E0E0);
 const errorColor = Colors.red;
 
 const fontFamily = 'Work Sans';
+
+const margin = 16.0;
 
 
 

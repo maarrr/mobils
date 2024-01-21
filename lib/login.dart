@@ -4,7 +4,6 @@ import 'package:mobils/components/custom-text-file.dart';
 import 'package:mobils/components/custom-text.dart';
 import 'package:mobils/constants.dart';
 import 'package:mobils/sign-in.dart';
-import 'package:mobils/store.dart';
 
 
 import 'components/button.dart';
@@ -45,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: const Header(),
       body:
       Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(margin),
         child: Center(
           child: Form(
             key: _formKey,
@@ -129,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final user = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       if (user != null) {
-        Store.saveUser(user.user!.uid);
+
         Navigator.push(
           context,
           MaterialPageRoute(

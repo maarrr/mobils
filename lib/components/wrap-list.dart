@@ -15,7 +15,7 @@ class WrapList extends StatelessWidget {
           GridView.builder(
                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                  crossAxisCount: elementPerRow,
-                 childAspectRatio: 2.0 / 2.0,
+                 childAspectRatio: 1,
                ),
                itemCount: images.length,
                itemBuilder: (BuildContext context, int index) {

@@ -1,15 +1,14 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:http/http.dart' as http;
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+
+import 'package:mobils/components/button.dart';
 import 'package:mobils/components/header.dart';
 import 'package:mobils/constants.dart';
 import 'package:mobils/utils.dart';
-
-import 'components/menu.dart';
+import 'package:mobils/components/button-text-icon.dart';
+import 'package:mobils/components/menu.dart';
 
 class SmartCreatorScreen extends StatefulWidget {
   const SmartCreatorScreen({Key? key}) : super(key: key);
@@ -19,9 +18,102 @@ class SmartCreatorScreen extends StatefulWidget {
 }
 
 class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
-  TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
   String _generatedImage = '';
   bool _isLoading = false;
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      appBar: const Header(),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(margin),
+          child:  Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _isLoading
+                  ? const SpinKitSpinningLines(
+                      color: primaryColor,
+                      size: 280.0,
+                      duration: Duration(seconds: 2),
+                    )
+                  : _generatedImage.isNotEmpty ? Image.memory(
+                      base64.decode(_generatedImage),
+                      height: 280,
+                      width: 280,
+                      fit: BoxFit.cover,
+                    )
+                  : Container(
+                    width: 280,
+                    height: 280,
+                    margin: const EdgeInsets.only(bottom: 30),
+                    color: backgroundColor,
+                    child: const SpinKitCubeGrid(
+                      color: primaryColor,
+                      size: 200.0,
+                      duration: Duration(seconds: 2),
+                    ),
+                  ),
+              const SizedBox(height: 16),
+              _generatedImage.isNotEmpty && !_isLoading ?
+                  ButtonTextIcon(
+                    text: "Save",
+                    size: 18,
+                    color: primaryVariant,
+                    icon: Icons.save_alt,
+                    onPressed: () => ImageUtils.saveImage(context, _generatedImage, "creations"),
+                  )
+              : const SizedBox(height: 16),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _descriptionController,
+                maxLines: 4,
+                style:
+                const TextStyle(color: textColor),
+                decoration: const InputDecoration(
+                  hintText: "Write your thoughts...",  // Use hintText instead of labelText
+                  hintStyle: TextStyle(
+                    color: textColor, // Adjust opacity for a subtle hint
+                    fontSize: 16,
+                  ),
+                  filled: true,
+                  fillColor: surfaceColor,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white, width: 1.0),
+                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: textColor, width: 2.0),
+                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Button(
+                textText: 'Generate Image',
+                sizeText: 24,
+                color: primaryColor,
+                onPressed: _generateImage,
+              ),
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: Menu(
+        currentIndex: 1,
+        onTap: (index) {
+          Menu.navigateToScreen(context, index);
+        },
+      ),
+    );
+  }
 
   void _generateImage() async {
     setState(() {
@@ -49,88 +141,4 @@ class _SmartCreatorScreenState extends State<SmartCreatorScreen> {
   }
 
 
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: const Header(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _isLoading
-                  ? SpinKitSpinningLines(
-                color: primaryColor,
-                size: 160.0,
-                duration: const Duration(seconds: 2),
-              )
-                  : _generatedImage.isNotEmpty
-                  ? Image.memory(
-                base64.decode(_generatedImage),
-                height: 250,
-                width: 250,
-                fit: BoxFit.cover,
-              )
-                  : Container(
-                width: 250,
-                height: 250,
-                margin: EdgeInsets.only(bottom: 30),
-                color: backgroundColor,
-                child: SpinKitCubeGrid(
-                  color: primaryColor,
-                  size: 160.0,
-                  duration: const Duration(seconds: 2),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextField(
-                controller: _descriptionController,
-                maxLines: 4,
-                style: TextStyle(color: textColor),
-                decoration: InputDecoration(
-                  labelText: "Input your image description...",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white, width: 1.0),
-                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                  ),
-                ),
-              ),
-              SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ElevatedButton(
-                    onPressed: _generateImage,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      foregroundColor: textColor,
-                    ),
-                    child: Text('Generate Image'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => ImageUtils.saveImage(context, _generatedImage, "creations"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      foregroundColor: textColor,
-                    ),
-                    child: Text('Save Image'),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: Menu(
-        currentIndex: 1,
-        onTap: (index) {
-          Menu.navigateToScreen(context, index);
-        },
-      ),
-    );
-  }
 }

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:mobils/components/custom-text.dart';
 import 'package:mobils/constants.dart';

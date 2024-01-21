@@ -10,7 +10,6 @@ class CustomTextFile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return TextFormField(
           obscureText: isPassword,
           style: const TextStyle(color: textColor),
