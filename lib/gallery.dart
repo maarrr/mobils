@@ -130,11 +130,11 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
     if (file != null) {
       imagePath = file.path;
-      await _uploadFile();
+      await _uploadFile("gallery");
     }
   }
 
-  Future<void> _uploadFile() async {
+  Future<void> _uploadFile(String subfolder) async {
     if (imagePath == null) return;
     File fileToUpload = File(imagePath as String);
     final fileName = basename(fileToUpload.path);
@@ -145,7 +145,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
       return;
     }
 
-    final destination = '${user.uid}/$fileName';
+    final destination = '${user.uid}/$subfolder/$fileName';
 
     Uint8List squaredImageBytes = await _cropImageToSquare(fileToUpload);
 
@@ -189,7 +189,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
     return croppedBytes;
   }
 
-  _getImagesGallery() async {
+  Future<void> _getImagesGallery() async {
     imageUrlsController.add(await ImageUtils.getAllImagesFromStorage("gallery"));
 
   }
